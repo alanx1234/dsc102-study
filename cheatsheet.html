@@ -46,6 +46,12 @@ ul { padding-left: 3.5mm; margin: 0.3mm 0; }
 li { margin: 0.2mm 0; }
 b { font-weight: bold; }
 
+.alg-table { width: 100%; border-collapse: collapse; font-size: 5.4pt; margin: 0.5mm 0; }
+.alg-table th, .alg-table td { border: 0.5px solid #888; padding: 0.4mm 0.8mm; vertical-align: top; }
+.alg-table th { font-weight: bold; text-align: center; background: #eee; }
+.alg-table td:first-child { font-weight: bold; white-space: nowrap; }
+.alg-table tr:nth-child(even) td { background: #f8f8f8; }
+
 .eg {
   font-size: 6.2pt;
   margin: 0.5mm 0 0.3mm 2mm;
@@ -96,6 +102,21 @@ To verify: 0xB9 = 11×16+9 = 176+9 = 185 ✓</p>
 <p class="eg">95+60=155 &gt; 127 → overflow. 10011011₂ → 155−256 = <b>−101</b><br>
 120+15=135 → 10000111₂ → 135−256 = <b>−121</b><br>
 11111110₂ unsigned=254 → signed=254−256=<b>−2</b></p>
+</div>
+
+<div class="sec">
+<span class="title">4-bit Encoding Reference</span>
+<div class="f">Bin  Un 2C 1C Hx  │ Bin  Un 2C 1C Hx
+0000  0  0  0  0  │ 1000  8 -8 -7  8
+0001  1  1  1  1  │ 1001  9 -7 -6  9
+0010  2  2  2  2  │ 1010 10 -6 -5  A
+0011  3  3  3  3  │ 1011 11 -5 -4  B
+0100  4  4  4  4  │ 1100 12 -4 -3  C
+0101  5  5  5  5  │ 1101 13 -3 -2  D
+0110  6  6  6  6  │ 1110 14 -2 -1  E
+0111  7  7  7  7  │ 1111 15 -1 -0  F</div>
+<p>1's comp: flip all bits (two zeros: 0000=+0, 1111=−0)<br>
+2's comp: flip all bits + 1 (one zero, range −8 to 7)</p>
 </div>
 
 <div class="sec">
@@ -312,11 +333,16 @@ Turnaround ranking (best→worst): SRTF = SJF &gt; RR &gt; FCFS</p>
 </div>
 
 <div class="sec">
-<span class="title">Scheduling Algorithms</span>
-<p><b>FCFS:</b> treat the ready queue as a literal FIFO — process at the front runs until done, then dequeue next. Convoy effect: one long job stalls all shorter ones behind it.</p>
-<p><b>SJF (non-preemptive):</b> when CPU becomes free, scan all READY jobs and pick the one with the shortest burst. Does NOT interrupt a currently running job even if something shorter arrives.</p>
-<p><b>SRTF (preemptive SJF):</b> on every new arrival (and on each completion), compare the newcomer's burst to the running job's REMAINING time. If newcomer is shorter → preempt immediately. Think: always running the minimum remaining time in the ready set.</p>
-<p><b>Round Robin:</b> cycle through jobs giving each a fixed quantum q. Unfinished job goes to back of queue. Good response time. If q too small → context-switch overhead dominates; if q too large → degenerates to FCFS.</p>
+<span class="title">Scheduling Algorithm Comparison</span>
+<table class="alg-table">
+<tr><th></th><th>FCFS</th><th>Round Robin</th><th>SJF</th><th>SRTF</th></tr>
+<tr><td>Preemptive?</td><td>❌</td><td>✅</td><td>❌</td><td>✅</td></tr>
+<tr><td>Decision point</td><td>When CPU free</td><td>Every quantum</td><td>When CPU free</td><td>Every arrival / completion</td></tr>
+<tr><td>Track</td><td>Arrival</td><td>Arrival, remaining, quantum</td><td>Arrival, burst</td><td>Arrival, remaining</td></tr>
+<tr><td>Pick next</td><td>Earliest arrival</td><td>Next in queue</td><td>Shortest burst (arrived)</td><td>Shortest remaining (arrived)</td></tr>
+<tr><td>Switch when</td><td>Current finishes</td><td>Quantum expires or finishes</td><td>Current finishes</td><td>New arrival has less remaining</td></tr>
+<tr><td>Tie-break</td><td>Earlier arrival</td><td>Queue order</td><td>Earlier arrival</td><td>Earlier arrival</td></tr>
+</table>
 </div>
 
 <div class="sec">
@@ -553,6 +579,10 @@ VPN=12 bits, entries=4096, 1PT=16KB, all=128KB → frames=128KB/4KB=<b>32</b></p
 offset=8, VPN=8, entries=256/process</p>
 </div>
 
+</div>
+
+<div class="col">
+
 <div class="sec">
 <span class="title">Page Replacement Policies</span>
 <p><b>FIFO:</b> evict page loaded EARLIEST (track load order)</p>
@@ -567,10 +597,6 @@ offset=8, VPN=8, entries=256/process</p>
   <li>Count total faults and hits</li>
 </ol>
 </div>
-
-</div>
-
-<div class="col">
 
 <div class="sec">
 <span class="title">Page Replacement Example</span>
@@ -630,7 +656,7 @@ A→evict D[B,E,A]F  B=hit  C→evict E[A,B,C]F
 Faults = 8  (tie with FIFO here)</div>
 <p><b>OPT:</b></p>
 <div class="f">A→[A]F  B→[A,B]F  C→[A,B,C]F  A=hit
-D: next use: B@+1,A@+3,C→never → evict C → [A,B,D]F
+D: next use: B@+1,A@+3,C@+5 → evict C → [A,B,D]F
 B=hit  E: D→never → evict D → [A,B,E]F
 A=hit  B=hit  C: all→never → evict any → [A,B,C]F
 Faults = 6  (OPT beats FIFO=LRU=8 on this string)</div>
