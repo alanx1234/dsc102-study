@@ -483,6 +483,27 @@ Same over 1.6Gbps network (=200MB/s): 40×10⁹/2×10⁸=<b>200s</b></p>
 <div class="col">
 
 <div class="sec">
+<span class="title">Pages vs Frames — Mental Model</span>
+<p><b>The core idea:</b> virtual address space is a fiction the OS creates for each process. Physical RAM is real hardware. The OS maps between them using fixed-size chunks.</p>
+<p><b>Page</b> = chunk of <b>virtual</b> address space (what the process sees). Pages are the <b>content</b> — the data the process wants to store. Numbered 0,1,2,… → that number is the <b>VPN</b>. A page doesn't "live" anywhere by itself; it needs a frame to park in.</p>
+<p><b>Frame</b> = slot in <b>physical</b> RAM (real hardware). Frames are the <b>locations</b> — parking spots that can hold one page's worth of bytes. Numbered 0,1,2,… → that number is the <b>PFN</b>.</p>
+<p><b>Relationship:</b> page = content, frame = location. The page table maps one to the other: "page 3 is currently parked in frame 7." A process's pages don't need to be in adjacent frames — page 0 could be in frame 12, page 1 in frame 3. The process never knows; hardware translates invisibly. If RAM fills up, the OS evicts a page from its frame (writes to disk, marks PTE valid=0, frees the frame for someone else). Next access → page fault → OS reloads it into any free frame.</p>
+<p><b>Offset</b> = byte position WITHIN the page/frame. Same in VA and PA — it never changes during translation, because page size = frame size, so the position inside the chunk is identical on both sides.</p>
+<p><b>Page Table Entry (PTE):</b> the mapping record for one page. Stores: PFN (which frame holds this page), <b>valid bit</b> (1=in RAM, 0=not in RAM → fault), dirty bit (written since loaded?), permission bits (read/write/exec).</p>
+<p><b>Page Table:</b> array indexed by VPN. One table per process (kernel owns it). Entry at index VPN = PTE for that page.</p>
+<p><b>Translation in plain English:</b></p>
+<ol style="padding-left:4mm">
+  <li>Process generates VA. CPU splits it: upper bits = VPN, lower bits = offset</li>
+  <li>VPN → index into page table → read PTE</li>
+  <li>PTE gives PFN (which frame the page is in)</li>
+  <li>PA = PFN concatenated with offset (same offset, different frame base)</li>
+</ol>
+<p class="eg">VA=0x2003, page=4KB (0x1000), page table[2]=PFN 5:<br>
+VPN=0x2003÷0x1000=<b>2</b>, offset=0x2003 mod 0x1000=<b>3</b><br>
+PA = 5×4096+3 = 0x5003. Offset (3) unchanged.</p>
+</div>
+
+<div class="sec">
 <span class="title">Virtual Memory Basics</span>
 <div class="f">offset_bits = log₂(page_size)
 VPN_bits   = address_bits − offset_bits
@@ -490,6 +511,10 @@ VPN_bits   = address_bits − offset_bits
 
 VPN    = virtual_addr ÷ page_size  (upper bits)
 offset = virtual_addr mod page_size (lower bits)
+
+VPN → PFN:  PTE = page_table[VPN]   ← index the array
+            if PTE.valid == 0 → page fault (not in RAM)
+            PFN = PTE.pfn_field      ← read PFN from PTE
 
 physical_addr = PFN × page_size + offset</div>
 <p class="eg">8-bit VA, page_size=16B (2^4):<br>
@@ -612,14 +637,20 @@ Faults = 6  (OPT beats FIFO=LRU=8 on this string)</div>
 </div>
 
 <div class="sec">
-<span class="title">VPN/PFN Translation (more examples)</span>
-<p class="eg">16-bit VA, page=256B (2^8): offset=8 bits, VPN=8 bits<br>
+<span class="title">VPN/PFN Translation — Class Format</span>
+<p><b>How the exam gives it:</b> you get a page table as a lookup table (VPN→PFN), a virtual address, and a page size. Steps:</p>
+<div class="f">Step 1: VPN    = VA ÷ page_size  (integer division)
+Step 2: offset = VA mod page_size
+Step 3: PFN    = page_table[VPN]  ← look up in the given table
+Step 4: PA     = PFN × page_size + offset</div>
+<p class="eg"><b>Review B, Problem 3</b> — 8-bit VA, page=16B, table:<br>
+VPN: 0→5, 1→2, 2→7, 3→1<br>
+VA=35: VPN=35÷16=<b>2</b>, offset=3 → PFN=table[2]=<b>7</b> → PA=7×16+3=<b>115</b><br>
+VA=50: VPN=50÷16=<b>3</b>, offset=2 → PFN=table[3]=<b>1</b> → PA=1×16+2=<b>18</b></p>
+<p class="eg">16-bit VA, page=256B: VPN=upper byte, offset=lower byte<br>
 VA=0x12AB: VPN=0x12=18, offset=0xAB=171<br>
-If page table[18]=PFN 5: PA=5×256+171=<b>1451</b></p>
-<p class="eg">Page size = 4KB = 2^12: offset = 12 bits always for 4KB<br>
-VA_bits=32: VPN=20 bits, entries=2^20 per process</p>
-<p><b>PTE size:</b> must hold PFN + control bits (valid, dirty, read/write)<br>
-If PA space = 2^20 bytes, 4KB pages → 2^8 physical frames → need 8 bits for PFN + overhead → round up to 4B per PTE</p>
+If table[18]=PFN 5: PA=5×256+171=<b>1451</b></p>
+<p><b>PTE size:</b> if PA space=2^20B, 4KB pages → 2^8 frames → 8-bit PFN → round up to 4B per PTE</p>
 </div>
 
 <div class="sec">
