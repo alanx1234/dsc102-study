@@ -1,0 +1,1527 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSC 102 Static Exam Study Guide</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #5f6f83;
+      --line: #dce3ec;
+      --blue: #2563eb;
+      --teal: #0f766e;
+      --amber: #b45309;
+      --rose: #be123c;
+      --green: #15803d;
+      --soft-blue: #edf4ff;
+      --soft-teal: #e9f7f4;
+      --soft-amber: #fff6df;
+      --soft-rose: #fff1f4;
+      --soft-green: #edf8ef;
+      --shadow: 0 16px 42px rgba(23, 32, 51, 0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.58;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    code, pre {
+      font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 276px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 24px 18px;
+      background: #ffffff;
+      border-right: 1px solid var(--line);
+    }
+
+    .brand {
+      margin-bottom: 22px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.12rem;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .nav {
+      display: grid;
+      gap: 4px;
+    }
+
+    .nav a {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 7px;
+      color: #334155;
+      text-decoration: none;
+      font-size: 0.92rem;
+    }
+
+    .nav a:hover {
+      background: var(--soft-blue);
+      color: #1d4ed8;
+    }
+
+    .hero {
+      min-height: 58vh;
+      display: grid;
+      align-items: center;
+      padding: 56px clamp(22px, 5vw, 76px);
+      background:
+        linear-gradient(135deg, rgba(237, 244, 255, 0.95), rgba(233, 247, 244, 0.92)),
+        linear-gradient(90deg, #ffffff, #eef6f2);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+      gap: clamp(24px, 5vw, 62px);
+      align-items: center;
+      max-width: 1240px;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(2.45rem, 5vw, 5rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #405067;
+      font-size: clamp(1rem, 1.5vw, 1.18rem);
+    }
+
+    .exam-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow);
+    }
+
+    .exam-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .exam-card ol {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .exam-card li {
+      margin-bottom: 8px;
+    }
+
+    .main {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 42px clamp(18px, 4vw, 54px) 80px;
+    }
+
+    section {
+      scroll-margin-top: 24px;
+      margin-bottom: 60px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.7rem, 3vw, 2.35rem);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.12rem;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    .lead {
+      max-width: 900px;
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      grid-column: span 6;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 10px 28px rgba(23, 32, 51, 0.05);
+    }
+
+    .card.wide {
+      grid-column: 1 / -1;
+    }
+
+    .card.third {
+      grid-column: span 4;
+    }
+
+    .card.quarter {
+      grid-column: span 3;
+    }
+
+    .formula {
+      display: block;
+      margin: 12px 0;
+      padding: 12px;
+      border-left: 4px solid var(--teal);
+      border-radius: 6px;
+      background: #f4fbf9;
+      color: #173d39;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .math {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      letter-spacing: 0;
+    }
+
+    .math sup,
+    .math sub {
+      font-style: normal;
+      line-height: 0;
+    }
+
+    .formula .math {
+      font-size: 1.02rem;
+    }
+
+    .eq {
+      display: block;
+      margin: 4px 0;
+    }
+
+    .example {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 7px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .example strong {
+      color: #0f172a;
+    }
+
+    .steps {
+      margin: 8px 0 0;
+      padding-left: 22px;
+    }
+
+    .steps li {
+      margin-bottom: 7px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--soft-blue);
+      color: #1e3a8a;
+      font-size: 0.84rem;
+      font-weight: 750;
+    }
+
+    .callout {
+      padding: 14px 16px;
+      border-left: 5px solid var(--amber);
+      border-radius: 7px;
+      background: var(--soft-amber);
+      color: #4a3410;
+    }
+
+    .danger {
+      border-left-color: var(--rose);
+      background: var(--soft-rose);
+      color: #5f1725;
+    }
+
+    .success {
+      border-left-color: var(--green);
+      background: var(--soft-green);
+      color: #143f21;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #475569;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .memory-ladder {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .ladder-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 110px;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fbfdff;
+    }
+
+    .bar {
+      height: 15px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #dbe5ef;
+    }
+
+    .bar span {
+      display: block;
+      width: var(--w);
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+    }
+
+    .bits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 12px 0;
+    }
+
+    .bit {
+      width: 32px;
+      height: 35px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      border: 1px solid #a7b7cc;
+      background: #fff;
+      font-family: "Cascadia Code", Consolas, monospace;
+      font-weight: 850;
+    }
+
+    .bit.sign {
+      border-color: var(--rose);
+      background: var(--soft-rose);
+      color: var(--rose);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .flow-box {
+      min-height: 78px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      text-align: center;
+    }
+
+    .flow-arrow {
+      color: var(--muted);
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .gantt {
+      display: flex;
+      width: 100%;
+      min-height: 50px;
+      border-radius: 7px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin-top: 12px;
+    }
+
+    .slot {
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 850;
+      font-size: 0.86rem;
+      padding: 4px;
+      min-width: 36px;
+    }
+
+    .trace {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(34px, 1fr));
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .trace-cell {
+      min-height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      font-weight: 850;
+    }
+
+    .trace-cell.fault {
+      border-color: var(--rose);
+      background: var(--soft-rose);
+      color: var(--rose);
+    }
+
+    .trace-cell.hit {
+      border-color: var(--teal);
+      background: var(--soft-teal);
+      color: var(--teal);
+    }
+
+    .io-bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .io-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 90px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .io-row .bar span {
+      background: var(--blue);
+    }
+
+    .io-row.warning .bar span {
+      background: var(--rose);
+    }
+
+    .svg-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .checklist {
+      columns: 2;
+      column-gap: 28px;
+      padding-left: 20px;
+      margin: 10px 0 0;
+    }
+
+    .checklist li {
+      break-inside: avoid;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 980px) {
+      .shell {
+        display: block;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card,
+      .card.third,
+      .card.quarter {
+        grid-column: 1 / -1;
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-arrow {
+        transform: rotate(90deg);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        min-height: auto;
+        padding: 34px 20px;
+      }
+
+      .nav {
+        grid-template-columns: 1fr;
+      }
+
+      .ladder-row,
+      .io-row {
+        grid-template-columns: 1fr;
+      }
+
+      .trace {
+        grid-template-columns: repeat(5, minmax(34px, 1fr));
+      }
+
+      .checklist {
+        columns: 1;
+      }
+    }
+
+    @media print {
+      .sidebar {
+        display: none;
+      }
+
+      .shell {
+        display: block;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 24px 0;
+      }
+
+      .main {
+        padding: 0;
+      }
+
+      .card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>DSC 102 Exam Guide</h1>
+        <p>Static visual study page. No calculators, just what to know and how to solve it.</p>
+      </div>
+      <nav class="nav" aria-label="Study sections">
+        <a href="#strategy">Study Strategy</a>
+        <a href="#coverage">Coverage Map</a>
+        <a href="#systems">Systems Big Picture</a>
+        <a href="#representation">Representation</a>
+        <a href="#cpu">CPU and Cache</a>
+        <a href="#os">OS and Scheduling</a>
+        <a href="#paging">Virtual Memory</a>
+        <a href="#storage">Storage and I/O</a>
+        <a href="#parallel">Parallelism</a>
+        <a href="#templates">Problem Templates</a>
+        <a href="#mistakes">Common Mistakes</a>
+        <a href="#checklist">Final Checklist</a>
+      </nav>
+    </aside>
+
+    <div>
+      <header class="hero">
+        <div class="hero-grid">
+          <div>
+            <h2>Study it like the exam is a set of systems puzzles.</h2>
+            <p>This static guide keeps the visualizations, but removes the interactive parts. It is meant to be read, reviewed, printed, and used as a checklist for the repeated DSC 102 problem types.</p>
+          </div>
+          <div class="exam-card">
+            <h3>The exam pattern</h3>
+            <ol>
+              <li>Recognize the resource: bits, cycles, cache lines, pages, workers, or bytes.</li>
+              <li>Write the correct formula or simulate the correct state.</li>
+              <li>Use units carefully.</li>
+              <li>Explain the systems consequence in words.</li>
+            </ol>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <section id="strategy">
+          <h2>1. How to Study This</h2>
+          <p class="lead">To aim for a top score, do not only memorize formulas. You need to know when each formula applies and what the answer means physically.</p>
+          <div class="grid">
+            <article class="card third">
+              <h3>First pass</h3>
+              <p>Read each section for meaning. Say the idea out loud in plain English.</p>
+              <div class="callout success">Example: AMAT is expected memory access time after accounting for hits and misses.</div>
+            </article>
+            <article class="card third">
+              <h3>Second pass</h3>
+              <p>Cover each worked example and redo it from scratch.</p>
+              <div class="callout">If you cannot start the problem, write the resource being counted first.</div>
+            </article>
+            <article class="card third">
+              <h3>Final pass</h3>
+              <p>Use the checklist at the bottom. Anything that feels slow becomes your review target.</p>
+              <div class="callout danger">Most lost points come from units, off-by-one simulation mistakes, and mixing hit rates.</div>
+            </article>
+          </div>
+        </section>
+
+        <section id="coverage">
+          <h2>2. Coverage Map</h2>
+          <p class="lead">This page is organized by concept family, not by PDF, so overlapping questions are merged into one place. Use this map to see how the lecture topics and the questions folder are represented.</p>
+          <div class="grid">
+            <article class="card wide">
+              <h3>Question-folder topic coverage</h3>
+              <table>
+                <tr><th>Question pattern</th><th>Where to study it</th><th>Mini-playbook</th><th>Main trap</th></tr>
+                <tr>
+                  <td>Bits, bases, hex addresses, alignment</td>
+                  <td>Digital Representation</td>
+                  <td>Use <span class="math">2<sup>k</sup></span> for capacity; use <span class="math">ceil(log<sub>2</sub> N)</span> for minimum bits; convert hex one digit at a time into 4 binary bits; for <span class="math">b</span>-byte alignment, valid addresses are multiples of <span class="math">b</span> and the valid fraction is <span class="math">1/b</span>.</td>
+                  <td>Mixing bits and bytes, or forgetting byte-addressable means each address names one byte.</td>
+                </tr>
+                <tr>
+                  <td>Two's-complement overflow</td>
+                  <td>Digital Representation</td>
+                  <td>For <span class="math">k</span>-bit signed integers, range is <span class="math">-2<sup>k-1</sup></span> to <span class="math">2<sup>k-1</sup> - 1</span>; if the exact result is outside range, wrap modulo <span class="math">2<sup>k</sup></span>; if MSB is 1, signed value is unsigned value minus <span class="math">2<sup>k</sup></span>.</td>
+                  <td>Using 255 as signed 8-bit max instead of 127.</td>
+                </tr>
+                <tr>
+                  <td>Custom float and exponent bias</td>
+                  <td>Digital Representation</td>
+                  <td>Split the bit string into sign, exponent, and fraction; compute <span class="math">(-1)<sup>s</sup></span>; convert exponent to decimal; use the given bias/formula; mantissa usually starts with hidden <span class="math">1 + fraction bits</span>.</td>
+                  <td>For bias questions, bias is <span class="math">2<sup>exponent bits - 1</sup> - 1</span>, so 4 exponent bits gives 7.</td>
+                </tr>
+                <tr>
+                  <td>CPI, stalls, clock rate, runtime</td>
+                  <td>CPU and Cache</td>
+                  <td>Compute weighted CPI; multiply by instruction count for cycles; divide by clock rate for seconds; for stalls, compute base cycles and stall cycles separately; speedup is old time over new time.</td>
+                  <td>Forgetting GHz means <span class="math">10<sup>9</sup></span> cycles per second.</td>
+                </tr>
+                <tr>
+                  <td>AMAT, hit rates, cache lines, locality</td>
+                  <td>CPU and Cache</td>
+                  <td>Use nested expectation: <span class="math">L1 + miss<sub>1</sub>(L2 + miss<sub>2</sub> x DRAM)</span>; DRAM probability is <span class="math">miss<sub>1</sub> x miss<sub>2</sub></span>; cache-line elements are line bytes / element bytes; row-major scans use spatial locality.</td>
+                  <td>Treating L2 hit rate as global when it is conditional on L1 miss.</td>
+                </tr>
+                <tr>
+                  <td>Pipelining and branch misprediction</td>
+                  <td>CPU and Cache</td>
+                  <td>For a perfect <span class="math">k</span>-stage pipeline with stage time <span class="math">s</span> and <span class="math">n</span> instructions, use <span class="math">(k+n-1)s</span>; if a branch is mispredicted, flush wrong-path younger instructions and restart them at the correction time.</td>
+                  <td>Saying pipelining reduces single-instruction latency; it mainly improves throughput.</td>
+                </tr>
+                <tr>
+                  <td>Processes, fork, threads, OS concepts</td>
+                  <td>OS and Scheduling</td>
+                  <td>Know ready/running/blocked transitions; blocked goes ready when I/O completes; processes do not share logical address space by default; threads do share process memory; <code>fork()</code> duplicates future execution.</td>
+                  <td>Assuming fork output has only one valid interleaving.</td>
+                </tr>
+                <tr>
+                  <td>FCFS, SJF, SRTF/SRCTF, RR</td>
+                  <td>OS and Scheduling</td>
+                  <td>Draw a Gantt chart; record first run and completion; compute turnaround as completion-arrival and response as first-run-arrival; RR uses a queue and a quantum; SRTF preempts when a shorter remaining job arrives.</td>
+                  <td>Computing response time using completion time, or forgetting context-switch overhead.</td>
+                </tr>
+                <tr>
+                  <td>Paging, page tables, FIFO/LRU/OPT</td>
+                  <td>Virtual Memory</td>
+                  <td>Split address into VPN and offset; physical address is <span class="math">PFN x page size + offset</span>; page table entries are <span class="math">2<sup>VA bits - offset bits</sup></span>; simulate references left to right; LRU hits update recency.</td>
+                  <td>For repeated ABCD with 3 frames, LRU faults every time because it always evicts the next page needed.</td>
+                </tr>
+                <tr>
+                  <td>Files, row/column store, data I/O</td>
+                  <td>Storage and I/O</td>
+                  <td>Compute row size from column byte sizes; file size is rows times row size; multiply by epochs/trials/passes; for row-store useful throughput, useful data is only the columns the query needs.</td>
+                  <td>Ignoring writes or counting full row-store bytes as useful bytes.</td>
+                </tr>
+                <tr>
+                  <td>Disk seek/rotation/fragmentation</td>
+                  <td>Storage and I/O</td>
+                  <td>Use <span class="math">T<sub>IO</sub> = T<sub>seek</sub> + T<sub>rotation</sub> + T<sub>transfer</sub></span>; average rotation is <span class="math">(60000/RPM)/2</span>; transfer is size/bandwidth; fragmented files pay seek+rotation for each chunk plus total transfer time.</td>
+                  <td>Using full rotation period instead of average rotational latency.</td>
+                </tr>
+                <tr>
+                  <td>Task graphs, Amdahl, NUMA, false sharing</td>
+                  <td>Parallelism</td>
+                  <td>Task lower bound is <span class="math">max(work/p, critical path)</span>; idle time is <span class="math">p x actual time - work</span>; Amdahl is <span class="math">1 / ((1-p) + p/n)</span>; NUMA remote latency multiplies local latency; false sharing means different variables share one cache line.</td>
+                  <td>Assuming speedup is linear or forgetting that Amdahl holds problem size fixed.</td>
+                </tr>
+              </table>
+            </article>
+            <article class="card">
+              <h3>Overlap handling</h3>
+              <p>The practice PDFs repeat core skills with different numbers. For example, CPI appears with 3 GHz, 4 GHz, stall cycles, and changed memory fractions. This guide teaches the template once, then gives representative worked examples.</p>
+            </article>
+            <article class="card">
+              <h3>What “comprehensive” means here</h3>
+              <p>Every repeated problem family from the questions is covered. The exact exam can still change numbers or wording, so the goal is to master the solving method, not memorize one answer.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="systems">
+          <h2>3. Systems Big Picture</h2>
+          <p class="lead">The whole course is about why analytics performance depends on the machine, OS, memory, storage, and parallel execution underneath your Python or data science code.</p>
+          <div class="grid">
+            <article class="card">
+              <h3>The main question</h3>
+              <code class="formula">Where is the bottleneck, and what abstraction is hiding it?</code>
+              <p>A model can be mathematically correct but still slow because data is on disk, missing cache, waiting on memory, blocked by scheduling, or limited by serial work.</p>
+            </article>
+            <article class="card">
+              <h3>Core performance words</h3>
+              <table>
+                <tr><th>Term</th><th>Meaning</th></tr>
+                <tr><td>Latency</td><td>Time for one operation or job to complete.</td></tr>
+                <tr><td>Throughput</td><td>Work completed per unit time.</td></tr>
+                <tr><td>Speedup</td><td>Old runtime divided by new runtime.</td></tr>
+                <tr><td>Efficiency</td><td>Speedup divided by number of processors/workers.</td></tr>
+                <tr><td>Scalability</td><td>How performance behaves as data, users, or hardware grow.</td></tr>
+              </table>
+            </article>
+            <article class="card wide">
+              <h3>Resource hierarchy visual</h3>
+              <p>Closer to the CPU usually means faster and smaller. Farther away usually means slower and larger.</p>
+              <div class="memory-ladder">
+                <div class="ladder-row"><strong>Registers</strong><div class="bar"><span style="--w: 96%"></span></div><span>~1 cycle</span></div>
+                <div class="ladder-row"><strong>L1/L2/L3 Cache</strong><div class="bar"><span style="--w: 78%"></span></div><span>nanoseconds</span></div>
+                <div class="ladder-row"><strong>DRAM</strong><div class="bar"><span style="--w: 50%"></span></div><span>tens of ns</span></div>
+                <div class="ladder-row"><strong>SSD/HDD</strong><div class="bar"><span style="--w: 23%"></span></div><span>us to ms</span></div>
+                <div class="ladder-row"><strong>Network</strong><div class="bar"><span style="--w: 14%"></span></div><span>variable</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="representation">
+          <h2>4. Digital Representation</h2>
+          <p class="lead">Representation questions test whether you understand that the same bits can mean different things depending on the type and interpretation.</p>
+          <div class="grid">
+            <article class="card">
+              <h3>Bits and capacity</h3>
+              <div class="formula">
+                <span class="eq"><span class="math">k</span> bits represent <span class="math">2<sup>k</sup></span> unique patterns</span>
+                <span class="eq">minimum bits for <span class="math">N</span> items = <span class="math">ceil(log<sub>2</sub> N)</span></span>
+                <span class="eq">1 byte = 8 bits</span>
+              </div>
+              <div class="example">
+                <strong>Worked example:</strong> Minimum bits for 70,000 items.
+                <ol class="steps">
+                  <li><span class="math">2<sup>16</sup> = 65,536</span>, which is too small.</li>
+                  <li><span class="math">2<sup>17</sup> = 131,072</span>, which is enough.</li>
+                  <li>Answer: 17 bits.</li>
+                </ol>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Hex, binary, and addressability</h3>
+              <p>Each hex digit maps to exactly 4 binary bits.</p>
+              <code class="formula">0x7F3A
+= 0111 1111 0011 1010</code>
+              <p>A 4-hex-digit address is 16 bits. In byte-addressable memory, that means the address space names <span class="math">2<sup>16</sup></span> bytes.</p>
+              <div class="example"><strong>Maximum addressable memory:</strong> <span class="math">2<sup>16</sup></span> bytes = 65,536 bytes = 64 KiB.</div>
+            </article>
+
+            <article class="card">
+              <h3>Alignment</h3>
+              <p>If instructions are 8 bytes and must be 8-byte aligned, valid addresses are multiples of 8.</p>
+              <code class="formula">PC starts at 0x4000:
+0x4000, 0x4008, 0x4010, 0x4018, 0x4020</code>
+              <div class="callout">8-byte alignment fixes the lowest 3 address bits to 000, so only 1/8 of byte addresses are valid instruction addresses.</div>
+            </article>
+
+            <article class="card">
+              <h3>Two's-complement signed integers</h3>
+              <div class="formula">
+                <span class="eq">Unsigned <span class="math">k</span>-bit range: <span class="math">0</span> to <span class="math">2<sup>k</sup> - 1</span></span>
+                <span class="eq">Signed two's-complement <span class="math">k</span>-bit range: <span class="math">-2<sup>k-1</sup></span> to <span class="math">2<sup>k-1</sup> - 1</span></span>
+                <span class="eq">8-bit signed range: -128 to 127</span>
+              </div>
+              <p>If the most significant bit is 1, interpret the value as unsigned minus <span class="math">2<sup>k</sup></span>.</p>
+            </article>
+
+            <article class="card wide">
+              <h3>Two's-complement overflow visual: 120 + 10</h3>
+              <p>120 + 10 = 130, but 130 is outside the 8-bit signed maximum of 127.</p>
+              <div class="bits" aria-label="10000010 bit pattern">
+                <span class="bit sign">1</span><span class="bit">0</span><span class="bit">0</span><span class="bit">0</span><span class="bit">0</span><span class="bit">0</span><span class="bit">1</span><span class="bit">0</span>
+              </div>
+              <code class="formula">10000010 as unsigned = 130
+10000010 as signed 8-bit = 130 - 256 = -126</code>
+              <div class="callout danger">Signed overflow happens when adding two positives produces a negative, or adding two negatives produces a positive.</div>
+            </article>
+
+            <article class="card">
+              <h3>Custom 6-bit float</h3>
+              <div class="formula">
+                <span class="eq">bits: 010110</span>
+                <span class="eq">sign = 0</span>
+                <span class="eq">exponent = 10<sub>2</sub> = 2</span>
+                <span class="eq">fraction = 110</span>
+                <span class="eq"><span class="math">value = (-1)<sup>s</sup> x 2<sup>exp - 1</sup> x (1 + f<sub>2</sub>2<sup>-1</sup> + f<sub>1</sub>2<sup>-2</sup> + f<sub>0</sub>2<sup>-3</sup>)</span></span>
+              </div>
+              <div class="example">
+                Mantissa = 1 + 1/2 + 1/4 + 0/8 = 1.75.
+                Scale = <span class="math">2<sup>2 - 1</sup> = 2</span>.
+                Value = 3.5.
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Float concepts</h3>
+              <ul class="steps">
+                <li>Floats are binary scientific notation.</li>
+                <li>IEEE float32 has sign, biased exponent, and mantissa/fraction.</li>
+                <li>Bias lets exponent bits represent negative and positive powers.</li>
+                <li>Floating-point arithmetic is approximate and not always associative.</li>
+                <li>Float16 and quantization trade precision for speed/memory savings.</li>
+              </ul>
+              <div class="example">
+                <strong>Bias question:</strong> with 4 exponent bits, bias is <span class="math">2<sup>4 - 1</sup> - 1 = 7</span>.
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Characters, endianness, serialization</h3>
+              <table>
+                <tr><th>Concept</th><th>What to know</th></tr>
+                <tr><td>ASCII/Unicode</td><td>Character encodings map symbols to bit patterns. Unicode supports many writing systems.</td></tr>
+                <tr><td>Big-endian</td><td>Stores most significant byte first. Example: 0x12345678 stored as 12 34 56 78.</td></tr>
+                <tr><td>Little-endian</td><td>Stores least significant byte first. Example: 0x12345678 stored as 78 56 34 12.</td></tr>
+                <tr><td>Serialization</td><td>Convert an object/data structure into bytes for files or networks; deserialization reverses it.</td></tr>
+              </table>
+            </article>
+          </div>
+        </section>
+
+        <section id="cpu">
+          <h2>5. CPU, Memory Hierarchy, and Cache</h2>
+          <p class="lead">These questions are mostly weighted averages and expected values. The story is always: CPUs are fast, memory is slower, and misses/stalls dominate.</p>
+          <div class="grid">
+            <article class="card">
+              <h3>CPI and runtime</h3>
+              <div class="formula">
+                <span class="eq">average CPI = <span class="math">sum(fraction<sub>i</sub> x cycles<sub>i</sub>)</span></span>
+                <span class="eq">total cycles = instruction count x average CPI</span>
+                <span class="eq">execution time = total cycles / clock rate</span>
+              </div>
+              <div class="example">
+                <strong>Worked example:</strong> <span class="math">2 x 10<sup>9</sup></span> instructions at 3 GHz. 40% arithmetic at 1 cycle, 30% memory at 5 cycles, 30% control at 2 cycles.
+                <div class="formula">
+                  <span class="eq">CPI = <span class="math">0.4(1) + 0.3(5) + 0.3(2) = 2.5</span></span>
+                  <span class="eq">cycles = <span class="math">2 x 10<sup>9</sup> x 2.5 = 5 x 10<sup>9</sup></span></span>
+                  <span class="eq">time = <span class="math">(5 x 10<sup>9</sup>) / (3 x 10<sup>9</sup>) = 1.67 s</span></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Memory stalls</h3>
+              <div class="formula">
+                <span class="eq">stall cycles = memory ops x stall cycles per memory op</span>
+                <span class="eq">total cycles = base cycles + stall cycles</span>
+                <span class="eq">stall percent = stall cycles / total cycles</span>
+                <span class="eq">speedup = old cycles / new cycles</span>
+              </div>
+              <div class="example">
+                1B instructions, 25% memory ops, 40-cycle stall.
+                <div class="formula">
+                  <span class="eq">base = 1B cycles</span>
+                  <span class="eq">stall = 0.25B x 40 = 10B cycles</span>
+                  <span class="eq">total = 11B cycles</span>
+                  <span class="eq">stall percent = 10/11 = 90.9%</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card wide">
+              <h3>AMAT flow</h3>
+              <p>Average Memory Access Time counts the expected cost of hits and misses through the hierarchy.</p>
+              <div class="flow">
+                <div class="flow-box"><strong>L1 access</strong><span>always paid</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box"><strong>L1 miss?</strong><span>only misses go to L2</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box"><strong>L2 miss?</strong><span>only nested misses go to DRAM</span></div>
+              </div>
+              <div class="formula">
+                <span class="eq">AMAT = <span class="math">T<sub>L1</sub> + MR<sub>L1</sub>(T<sub>L2</sub> + MR<sub>L2</sub> x T<sub>DRAM</sub>)</span></span>
+              </div>
+              <div class="example">
+                L1 = 2 ns, L1 hit = 0.8, L2 = 12 ns, L2 hit given L1 miss = 0.75, DRAM = 100 ns.
+                <div class="formula">
+                  <span class="eq">L1 miss = 0.2</span>
+                  <span class="eq">L2 miss = 0.25</span>
+                  <span class="eq">AMAT = <span class="math">2 + 0.2(12 + 0.25(100))</span></span>
+                  <span class="eq">AMAT = <span class="math">2 + 0.2(37) = 9.4 ns</span></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Locality</h3>
+              <table>
+                <tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+                <tr><td>Temporal</td><td>Use same data again soon.</td><td>Loop variable reused.</td></tr>
+                <tr><td>Spatial</td><td>Use nearby data soon.</td><td>Sequential array scan.</td></tr>
+              </table>
+            </article>
+
+            <article class="card">
+              <h3>Cache lines and row-major layout</h3>
+              <div class="formula">
+                <span class="eq">elements per line = cache line bytes / element bytes</span>
+                <span class="eq">sequential miss fraction ~= 1 / elements per line</span>
+              </div>
+              <div class="example">
+                64-byte cache line, float64 values.
+                <div class="formula">
+                  <span class="eq">64 / 8 = 8 values per cache line</span>
+                  <span class="eq">miss fraction ~= 1/8</span>
+                  <span class="eq">hit fraction ~= 7/8</span>
+                </div>
+              </div>
+              <div class="callout success">Row-major loop over columns is cache-friendly. Column-wise access jumps by a large stride and causes many misses.</div>
+            </article>
+
+            <article class="card wide">
+              <h3>Why NumPy beats Python loops</h3>
+              <div class="grid">
+                <div class="card quarter">
+                  <h3>Python loop</h3>
+                  <p>Interprets bytecode, checks types, handles objects, and repeats overhead per element.</p>
+                </div>
+                <div class="card quarter">
+                  <h3>NumPy</h3>
+                  <p>Uses homogeneous arrays and compiled kernels over contiguous memory.</p>
+                </div>
+                <div class="card quarter">
+                  <h3>Cache</h3>
+                  <p>Sequential layout helps the CPU reuse loaded cache lines.</p>
+                </div>
+                <div class="card quarter">
+                  <h3>Vectorization</h3>
+                  <p>Compiled libraries can use SIMD and optimized BLAS-style routines.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="card wide">
+              <h3>Pipelining and branch misprediction</h3>
+              <p>Pipelining overlaps instruction stages to improve throughput. It does not make the first individual instruction lower latency; the first instruction still must pass through all stages.</p>
+              <div class="formula">
+                <span class="eq">perfect <span class="math">k</span>-stage pipeline, stage time = <span class="math">s</span></span>
+                <span class="eq">time for <span class="math">n</span> instructions = <span class="math">(k + n - 1)s</span></span>
+              </div>
+              <div class="example">
+                <strong>Question-folder example:</strong> 5-stage pipeline, 10 ms stage time, first 10 instructions.
+                <div class="formula">
+                  <span class="eq">time = <span class="math">(5 + 10 - 1) x 10 ms = 140 ms</span></span>
+                </div>
+              </div>
+              <div class="example">
+                <strong>Branch misprediction idea:</strong> if a branch is discovered wrong after stage 3, younger wrong-path instructions already in the pipeline are flushed and restarted. In the review question, the 10-instruction total becomes 160 ms instead of 140 ms.
+              </div>
+              <div class="callout danger">True/false trap: “Pipelining reduces latency of jobs” is false in the simple pipeline sense. It mainly improves throughput after the pipeline fills.</div>
+            </article>
+          </div>
+        </section>
+
+        <section id="os">
+          <h2>6. Operating Systems and Scheduling</h2>
+          <p class="lead">The OS virtualizes hardware and decides how processes share CPUs, memory, files, and I/O devices.</p>
+          <div class="grid">
+            <article class="card">
+              <h3>What an OS does</h3>
+              <ul class="steps">
+                <li>Virtualizes CPU, memory, storage, GPU, and network resources.</li>
+                <li>Manages contention between processes.</li>
+                <li>Provides system calls such as open, read, write, fork, wait, and exec.</li>
+                <li>Protects processes from each other using isolation and privilege levels.</li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <h3>Process states</h3>
+              <div class="flow">
+                <div class="flow-box"><strong>Ready</strong><span>can run</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box"><strong>Running</strong><span>on CPU</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box"><strong>Blocked</strong><span>waiting for I/O</span></div>
+              </div>
+              <div class="callout">Blocked becomes ready when the I/O or waited-on event completes.</div>
+            </article>
+
+            <article class="card">
+              <h3>Processes vs threads</h3>
+              <table>
+                <tr><th>Feature</th><th>Process</th><th>Thread</th></tr>
+                <tr><td>Memory</td><td>Separate address space</td><td>Shared process address space</td></tr>
+                <tr><td>Isolation</td><td>Stronger</td><td>Weaker</td></tr>
+                <tr><td>Communication</td><td>IPC/files/sockets/shared memory</td><td>Shared variables</td></tr>
+                <tr><td>Risk</td><td>One crash is more contained</td><td>One bug can corrupt shared state</td></tr>
+              </table>
+            </article>
+
+            <article class="card">
+              <h3>High-yield OS facts from questions</h3>
+              <ul class="steps">
+                <li>A process moves from blocked to ready when its I/O completes.</li>
+                <li>Two separate processes do not share logical address space by default.</li>
+                <li>CPU scheduling supports multiprogramming and uses CPU time that would otherwise be idle.</li>
+                <li>Low response time is especially important for interactive jobs.</li>
+                <li>Threads share process memory, so shared-state bugs are easier to create.</li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <h3>Scheduling metrics</h3>
+              <div class="formula">
+                <span class="eq">turnaround = completion - arrival</span>
+                <span class="eq">response = first run - arrival</span>
+                <span class="eq">waiting = time ready but not running</span>
+              </div>
+              <p>Average turnaround matters for batch jobs. Response time matters for interactive jobs.</p>
+            </article>
+
+            <article class="card wide">
+              <h3>Scheduling algorithms</h3>
+              <table>
+                <tr><th>Algorithm</th><th>Rule</th><th>Strength</th><th>Weakness</th></tr>
+                <tr><td>FCFS/FIFO</td><td>Run in arrival order.</td><td>Simple.</td><td>Long jobs can delay short jobs.</td></tr>
+                <tr><td>SJF</td><td>Run shortest available job, non-preemptively.</td><td>Good average turnaround.</td><td>Needs job length estimate.</td></tr>
+                <tr><td>SRTF/SRCTF</td><td>Run shortest remaining job, preemptively.</td><td>Often best turnaround.</td><td>Can be unfair to long jobs.</td></tr>
+                <tr><td>Round Robin</td><td>Each job gets a time quantum.</td><td>Good fairness and response.</td><td>Small quantum means context-switch overhead.</td></tr>
+              </table>
+            </article>
+
+            <article class="card wide">
+              <h3>Fork output pattern</h3>
+              <p>For the practice code, remember that code before <code>fork()</code> runs once, while code after <code>fork()</code> runs in both parent and child.</p>
+              <code class="formula">W(A);
+child = fork();
+W(B);
+if (child) wait(NULL);
+W(C);</code>
+              <div class="example">
+                <strong>What must happen:</strong> A prints once. B prints twice. C prints twice. The parent prints B before waiting, then prints C after the child exits. The child does not wait.
+              </div>
+              <div class="callout">Because scheduling can interleave parent and child differently, valid visible outputs include ABBCC and ABCBC. The exact parent/child B's are indistinguishable on screen.</div>
+            </article>
+
+            <article class="card wide">
+              <h3>Worked scheduling example</h3>
+              <p>Jobs: P1 arrives 0 burst 7, P2 arrives 2 burst 4, P3 arrives 4 burst 1.</p>
+              <div class="gantt" aria-label="SRTF Gantt chart">
+                <div class="slot" style="width: 16.7%; background:#2563eb">P1<br>0-2</div>
+                <div class="slot" style="width: 16.7%; background:#0f766e">P2<br>2-4</div>
+                <div class="slot" style="width: 8.3%; background:#b45309">P3<br>4-5</div>
+                <div class="slot" style="width: 16.7%; background:#0f766e">P2<br>5-7</div>
+                <div class="slot" style="width: 41.6%; background:#2563eb">P1<br>7-12</div>
+              </div>
+              <table>
+                <tr><th>Job</th><th>Arrival</th><th>Completion</th><th>Turnaround</th><th>Response</th></tr>
+                <tr><td>P1</td><td>0</td><td>12</td><td>12</td><td>0</td></tr>
+                <tr><td>P2</td><td>2</td><td>7</td><td>5</td><td>0</td></tr>
+                <tr><td>P3</td><td>4</td><td>5</td><td>1</td><td>0</td></tr>
+              </table>
+            </article>
+
+            <article class="card wide">
+              <h3>Round Robin checklist</h3>
+              <ol class="steps">
+                <li>Use the ready queue in order.</li>
+                <li>Run the front job for <code>min(quantum, remaining burst)</code>.</li>
+                <li>If the job finishes, record completion time.</li>
+                <li>If it does not finish, append it to the back of the queue.</li>
+                <li>Response time is based only on the first time the job ever runs.</li>
+              </ol>
+              <div class="callout danger">If context switch overhead is given, charge it exactly as the problem states. Some questions charge it before every process except the first.</div>
+            </article>
+          </div>
+        </section>
+
+        <section id="paging">
+          <h2>7. Virtual Memory and Paging</h2>
+          <p class="lead">Paging questions are about splitting addresses, sizing page tables, and simulating replacement policies.</p>
+          <div class="grid">
+            <article class="card">
+              <h3>Address translation</h3>
+              <div class="formula">
+                <span class="eq">page size = <span class="math">2<sup>k</sup></span> bytes</span>
+                <span class="eq">offset bits = <span class="math">k</span></span>
+                <span class="eq">VPN bits = virtual address bits - <span class="math">k</span></span>
+                <span class="eq">virtual address = VPN + offset</span>
+                <span class="eq">physical address = PFN x page size + offset</span>
+              </div>
+              <div class="example">
+                8-bit virtual address, page size 16, map 2 -> 7. Translate VA 35.
+                <div class="formula">
+                  <span class="eq">VPN = <span class="math">floor(35/16) = 2</span></span>
+                  <span class="eq">offset = <span class="math">35 mod 16 = 3</span></span>
+                  <span class="eq">PFN = 7</span>
+                  <span class="eq">physical address = <span class="math">7 x 16 + 3 = 115</span></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Page table size</h3>
+              <div class="formula">
+                <span class="eq">entries = <span class="math">2<sup>VPN bits</sup></span></span>
+                <span class="eq">page table bytes = entries x PTE bytes</span>
+              </div>
+              <div class="example">
+                32-bit VA, 4 KB pages, 4-byte PTE.
+                <div class="formula">
+                  <span class="eq">4 KB = <span class="math">2<sup>12</sup></span>, so offset = 12 bits</span>
+                  <span class="eq">VPN bits = 32 - 12 = 20</span>
+                  <span class="eq">entries = <span class="math">2<sup>20</sup> = 1,048,576</span></span>
+                  <span class="eq">size = 1,048,576 x 4 bytes = 4 MiB</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Page tables measured in frames</h3>
+              <p>Some questions ask how many physical frames the OS uses for page tables.</p>
+              <div class="example">
+                20-bit logical address, 4 KB pages, 16 processes, PTE effectively stored as 4 bytes.
+                <div class="formula">
+                  <span class="eq">logical pages per process = <span class="math">2<sup>20</sup> / 2<sup>12</sup> = 2<sup>8</sup> = 256</span></span>
+                  <span class="eq">page table per process = 256 x 4 bytes = 1024 bytes</span>
+                  <span class="eq">all processes = 16 x 1024 = 16,384 bytes</span>
+                  <span class="eq">frames used = 16,384 / 4096 = 4 frames</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Page replacement policies</h3>
+              <table>
+                <tr><th>Policy</th><th>Evicts</th><th>Key simulation detail</th></tr>
+                <tr><td>FIFO</td><td>Oldest loaded page.</td><td>Hits do not change queue order.</td></tr>
+                <tr><td>LRU</td><td>Least recently used page.</td><td>Hits update recency.</td></tr>
+                <tr><td>OPT</td><td>Page used farthest in future.</td><td>Ideal lower bound, not realistic.</td></tr>
+              </table>
+            </article>
+
+            <article class="card">
+              <h3>Fault trace visual</h3>
+              <p>Reference string: ABCADBEABC, 3 frames. Hits are teal, faults are rose.</p>
+              <div class="trace">
+                <span class="trace-cell fault">A</span><span class="trace-cell fault">B</span><span class="trace-cell fault">C</span><span class="trace-cell hit">A</span><span class="trace-cell fault">D</span><span class="trace-cell hit">B</span><span class="trace-cell fault">E</span><span class="trace-cell fault">A</span><span class="trace-cell fault">B</span><span class="trace-cell fault">C</span>
+              </div>
+              <div class="callout danger">When simulating LRU, do not forget that a hit changes which page is least recently used.</div>
+            </article>
+
+            <article class="card wide">
+              <h3>Repeated ABCD demand-paging pattern</h3>
+              <p>The question file includes the infinite reference string ABCDABCD... with 3 frames.</p>
+              <table>
+                <tr><th>Policy</th><th>Asymptotic behavior</th><th>Why</th></tr>
+                <tr><td>LRU</td><td>Fault probability = 1</td><td>With 4 distinct pages and only 3 frames, the next page is always the one LRU just evicted.</td></tr>
+                <tr><td>OPT</td><td>Fault probability approaches about 1/3</td><td>OPT evicts the page whose next use is farthest away, so after warmup it can get hits between faults.</td></tr>
+              </table>
+            </article>
+
+            <article class="card wide">
+              <h3>Fragmentation and thrashing</h3>
+              <table>
+                <tr><th>Concept</th><th>Meaning</th><th>Exam consequence</th></tr>
+                <tr><td>Internal fragmentation</td><td>Unused space inside allocated pages.</td><td>Larger pages can increase it.</td></tr>
+                <tr><td>External fragmentation</td><td>Free memory split into unusable holes.</td><td>Paging largely avoids it.</td></tr>
+                <tr><td>Thrashing</td><td>System spends too much time paging.</td><td>CPU utilization decreases.</td></tr>
+              </table>
+            </article>
+          </div>
+        </section>
+
+        <section id="storage">
+          <h2>8. Files, Databases, Storage, and I/O</h2>
+          <p class="lead">Storage questions usually count bytes moved or the time paid for seek, rotation, and transfer.</p>
+          <div class="grid">
+            <article class="card">
+              <h3>File and filesystem concepts</h3>
+              <ul class="steps">
+                <li>A file is a persistent sequence of bytes plus metadata.</li>
+                <li>A directory maps names to file identifiers/inodes.</li>
+                <li>A filesystem exposes logical file abstractions and maps them to physical disk blocks.</li>
+                <li>Common calls: open, read, write, fsync, close, lseek.</li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <h3>Database vs file</h3>
+              <p>A database ultimately stores bytes in files, but adds a formal data model, schema/metadata, query processing, indexes, reliability, and higher-level operations.</p>
+              <div class="pill-row">
+                <span class="pill">Relation</span>
+                <span class="pill">Matrix</span>
+                <span class="pill">DataFrame</span>
+                <span class="pill">Tensor</span>
+                <span class="pill">Sequence</span>
+                <span class="pill">Tree</span>
+                <span class="pill">Graph</span>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Row vs column store</h3>
+              <table>
+                <tr><th>Layout</th><th>Good for</th><th>Risk</th></tr>
+                <tr><td>Row store</td><td>Need many columns from selected rows.</td><td>Wastes I/O if query needs one column.</td></tr>
+                <tr><td>Column store</td><td>Scan few columns over many rows.</td><td>Can be less direct for full-row access.</td></tr>
+                <tr><td>Parquet</td><td>Column pruning, compression, metadata.</td><td>Must match analytics access pattern.</td></tr>
+              </table>
+            </article>
+
+            <article class="card">
+              <h3>Useful throughput</h3>
+              <div class="formula">
+                <span class="eq">useful data = file size x needed columns / total columns</span>
+                <span class="eq">useful throughput = useful data / runtime</span>
+                <span class="eq">useful bandwidth percent = useful throughput / device bandwidth</span>
+              </div>
+              <div class="example">
+                12 GB row file, 120 columns, query needs 1 column, runtime 30 s, SSD 600 MB/s.
+                <div class="formula">
+                  <span class="eq">useful data = 12 / 120 = 0.1 GB = 100 MB</span>
+                  <span class="eq">useful throughput = 100 / 30 = 3.33 MB/s</span>
+                  <span class="eq">useful percent = 3.33 / 600 = 0.556%</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Dataset I/O size</h3>
+              <div class="formula">
+                <span class="eq">row size = sum(column byte sizes)</span>
+                <span class="eq">file size = rows x row size</span>
+                <span class="eq">total read I/O = file size x epochs x trials</span>
+              </div>
+              <div class="example">
+                500M rows with int64, int64, float64.
+                <div class="formula">
+                  <span class="eq">row = 8 + 8 + 8 = 24 bytes</span>
+                  <span class="eq">file = <span class="math">500 x 10<sup>6</sup> x 24 = 12 GB</span></span>
+                  <span class="eq">10 epochs x 3 learning rates = 30 reads</span>
+                  <span class="eq">total = 12 x 30 = 360 GB</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Feature expansion I/O</h3>
+              <div class="formula">
+                <span class="eq">pairwise interactions = <span class="math">C(d, 2) = d(d - 1)/2</span></span>
+              </div>
+              <div class="example">
+                d = 4 features plus label, 200M rows, float64.
+                <div class="formula">
+                  <span class="eq">new columns = <span class="math">C(4, 2) = 6</span></span>
+                  <span class="eq">original cols = 5, expanded cols = 11</span>
+                  <span class="eq">original = <span class="math">200 x 10<sup>6</sup> x 5 x 8 = 8 GB</span></span>
+                  <span class="eq">expanded = <span class="math">200 x 10<sup>6</sup> x 11 x 8 = 17.6 GB</span></span>
+                  <span class="eq">total I/O = 96 + 25.6 + 211.2 = 332.8 GB</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card wide">
+              <h3>Disk I/O visual</h3>
+              <div class="formula">
+                <span class="eq"><span class="math">T<sub>IO</sub> = T<sub>seek</sub> + T<sub>rotation</sub> + T<sub>transfer</sub></span></span>
+                <span class="eq">rotation period in ms = <span class="math">60000 / RPM</span></span>
+                <span class="eq">average rotational latency = period / 2</span>
+                <span class="eq">transfer time = data size / bandwidth</span>
+              </div>
+              <div class="io-bars">
+                <div class="io-row"><strong>Contiguous</strong><div class="bar"><span style="--w: 69%"></span></div><span>13.66 s</span></div>
+                <div class="io-row warning"><strong>Fragmented</strong><div class="bar"><span style="--w: 100%"></span></div><span>19.88 s</span></div>
+              </div>
+              <div class="example">
+                2 GB file, 7200 RPM, 8 ms seek, 150 MB/s, 512 fragments.
+                <div class="formula">
+                  <span class="eq">period = 60000 / 7200 = 8.33 ms</span>
+                  <span class="eq">avg rotation = 4.17 ms</span>
+                  <span class="eq">transfer = 2048 / 150 = 13.65 s</span>
+                  <span class="eq">fragment overhead = 512 x (8 + 4.17) ms = 6.23 s</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="parallel">
+          <h2>9. Parallelism and Scalable Processing</h2>
+          <p class="lead">Parallelism questions test dependency limits, serial bottlenecks, speedup, efficiency, and whether more workers actually help.</p>
+          <div class="grid">
+            <article class="card">
+              <h3>Core definitions</h3>
+              <table>
+                <tr><th>Term</th><th>Meaning</th></tr>
+                <tr><td>Concurrency</td><td>Multiple tasks in progress over the same time period.</td></tr>
+                <tr><td>Parallelism</td><td>Multiple tasks literally executing at the same time.</td></tr>
+                <tr><td>Task graph</td><td>Tasks connected by dependency edges.</td></tr>
+                <tr><td>Critical path</td><td>Longest dependency chain.</td></tr>
+                <tr><td>Degree of parallelism</td><td>Largest number of tasks that can run simultaneously.</td></tr>
+              </table>
+            </article>
+
+            <article class="card">
+              <h3>Task graph lower bound</h3>
+              <div class="formula">
+                <span class="eq"><span class="math">T<sub>p</sub> >= max(total work / p, critical path)</span></span>
+                <span class="eq">speedup <= <span class="math">T<sub>1</sub> / lower bound</span></span>
+                <span class="eq">idle time = <span class="math">p x actual time - total work</span></span>
+              </div>
+              <div class="example">
+                Total work = 100, critical path = 40, workers = 4.
+                <div class="formula">
+                  <span class="eq">work / <span class="math">p</span> = 100 / 4 = 25</span>
+                  <span class="eq">lower bound = max(25, 40) = 40</span>
+                  <span class="eq">max speedup = 100 / 40 = 2.5x</span>
+                  <span class="eq">if actual time = 50, idle = 4 x 50 - 100 = 100</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card wide">
+              <h3>Amdahl's Law</h3>
+              <p>Amdahl considers adding more hardware to the same fixed-size workload. It does consider parallelism, but it does not scale the problem size up to match the hardware.</p>
+              <div class="formula">
+                <span class="eq">speedup(<span class="math">n</span>) = <span class="math">1 / ((1 - p) + p/n)</span></span>
+                <span class="eq">max speedup with infinite processors = <span class="math">1 / (1 - p)</span></span>
+              </div>
+              <div class="svg-wrap">
+                <svg viewBox="0 0 860 260" role="img" aria-label="Amdahl speedup curve showing flattening speedup">
+                  <rect width="860" height="260" fill="#ffffff"></rect>
+                  <line x1="60" y1="210" x2="820" y2="210" stroke="#cbd5e1" stroke-width="2"></line>
+                  <line x1="60" y1="30" x2="60" y2="210" stroke="#cbd5e1" stroke-width="2"></line>
+                  <path d="M60 210 C120 150, 185 116, 250 96 C340 70, 460 58, 590 52 C690 49, 760 48, 820 48" fill="none" stroke="#2563eb" stroke-width="5"></path>
+                  <line x1="60" y1="48" x2="820" y2="48" stroke="#be123c" stroke-width="2" stroke-dasharray="8 8"></line>
+                  <circle cx="430" cy="62" r="8" fill="#0f766e"></circle>
+                  <text x="62" y="228" fill="#475569" font-size="16">1 core</text>
+                  <text x="745" y="228" fill="#475569" font-size="16">more cores</text>
+                  <text x="80" y="44" fill="#be123c" font-size="16">serial limit</text>
+                  <text x="442" y="68" fill="#0f766e" font-size="16">sublinear speedup</text>
+                </svg>
+              </div>
+              <div class="example">
+                If 75% is parallel and 25% is serial:
+                <div class="formula">
+                  <span class="eq">8-core speedup = <span class="math">1 / (0.25 + 0.75/8) = 2.91x</span></span>
+                  <span class="eq">infinite-core limit = <span class="math">1 / 0.25 = 4x</span></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Speedup vs scaleup</h3>
+              <table>
+                <tr><th>Idea</th><th>Question</th></tr>
+                <tr><td>Speedup</td><td>Same work, more hardware, less time?</td></tr>
+                <tr><td>Scaleup</td><td>More work, proportionally more hardware, similar time?</td></tr>
+              </table>
+              <div class="callout success">Amdahl is about speedup for a fixed-size job, not growing the total work to match the hardware.</div>
+            </article>
+
+            <article class="card">
+              <h3>Dask and dataflow</h3>
+              <ul class="steps">
+                <li>Dask builds task graphs lazily.</li>
+                <li>Execution happens when compute is triggered.</li>
+                <li>Too few partitions means too little parallelism.</li>
+                <li>Too many tiny tasks means scheduler overhead dominates.</li>
+                <li>Use diagnostics to find whether workers are idle, overloaded, or waiting on data.</li>
+              </ul>
+            </article>
+
+            <article class="card wide">
+              <h3>SIMD, GPU, NUMA, false sharing</h3>
+              <table>
+                <tr><th>Concept</th><th>Meaning</th><th>Exam language</th></tr>
+                <tr><td>SIMD</td><td>Single instruction operates on multiple data values.</td><td>Vectorized NumPy can exploit this under the hood.</td></tr>
+                <tr><td>GPU</td><td>Massively parallel hardware for high arithmetic intensity workloads.</td><td>Bottlenecks include transfer, VRAM, divergence, communication.</td></tr>
+                <tr><td>NUMA</td><td>Remote RAM can be slower than local RAM.</td><td>3x remote latency with 100 ns local means 300 ns remote.</td></tr>
+                <tr><td>False sharing</td><td>Threads write different values on the same cache line.</td><td>Cache line bounces between cores, hurting performance.</td></tr>
+              </table>
+            </article>
+          </div>
+        </section>
+
+        <section id="templates">
+          <h2>10. High-Yield Problem Templates</h2>
+          <p class="lead">These are the starting moves for almost every numerical question in your practice PDFs.</p>
+          <div class="grid">
+            <article class="card third"><h3>Bits</h3><div class="formula"><span class="eq">smallest <span class="math">k</span> such that <span class="math">2<sup>k</sup> >= N</span></span></div></article>
+            <article class="card third"><h3>Alignment</h3><div class="formula"><span class="eq">valid fraction = 1 / instruction bytes</span></div></article>
+            <article class="card third"><h3>CPI</h3><div class="formula"><span class="eq">CPI = <span class="math">sum(f<sub>i</sub>c<sub>i</sub>)</span></span><span class="eq">time = instructions x CPI / clock</span></div></article>
+            <article class="card third"><h3>Stalls</h3><div class="formula"><span class="eq">stall cycles = memory ops x stall</span><span class="eq">speedup = old cycles / new cycles</span></div></article>
+            <article class="card third"><h3>AMAT</h3><div class="formula"><span class="eq"><span class="math">L1 + miss<sub>1</sub>(L2 + miss<sub>2</sub> x DRAM)</span></span></div></article>
+            <article class="card third"><h3>Cache Line</h3><div class="formula"><span class="eq">elements = line bytes / element bytes</span><span class="eq">miss fraction ~= 1 / elements</span></div></article>
+            <article class="card third"><h3>Paging</h3><div class="formula"><span class="eq">offset bits = <span class="math">log<sub>2</sub>(page size)</span></span><span class="eq">entries = <span class="math">2<sup>VA bits - offset bits</sup></span></span></div></article>
+            <article class="card third"><h3>Scheduling</h3><div class="formula"><span class="eq">turnaround = completion - arrival</span><span class="eq">response = first run - arrival</span></div></article>
+            <article class="card third"><h3>Disk</h3><div class="formula"><span class="eq"><span class="math">T = seek + rotation + transfer</span></span><span class="eq">avg rotation = <span class="math">(60000/RPM)/2</span></span></div></article>
+            <article class="card third"><h3>Dataset I/O</h3><div class="formula"><span class="eq">file = rows x columns x bytes</span><span class="eq">I/O = sum(reads and writes)</span></div></article>
+            <article class="card third"><h3>Task Graph</h3><div class="formula"><span class="eq">lower bound = <span class="math">max(work/p, critical path)</span></span></div></article>
+            <article class="card third"><h3>Amdahl</h3><div class="formula"><span class="eq">speedup = <span class="math">1 / ((1-p)+p/n)</span></span></div></article>
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>11. Common Mistakes</h2>
+          <div class="grid">
+            <article class="card wide">
+              <ul class="checklist">
+                <li>Mixing bits and bytes.</li>
+                <li>Forgetting byte-addressable means one address names one byte.</li>
+                <li>Using 255 as signed 8-bit max; signed max is 127.</li>
+                <li>Forgetting exponent bias is <span class="math">2<sup>exponent bits - 1</sup> - 1</span>.</li>
+                <li>Declaring overflow without checking representable range/sign rule.</li>
+                <li>Forgetting that L2 hit rate is usually conditional on L1 miss.</li>
+                <li>Saying pipelining reduces single-instruction latency instead of throughput.</li>
+                <li>Assuming fork output has only one possible interleaving.</li>
+                <li>Forgetting to update recency on LRU hits.</li>
+                <li>Computing response time as completion time.</li>
+                <li>Ignoring context switch overhead when given.</li>
+                <li>Counting all row-store bytes as useful when only one column is needed.</li>
+                <li>Ignoring writes in total I/O cost.</li>
+                <li>Assuming parallel speedup is linear.</li>
+                <li>Forgetting the critical path lower bound.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="checklist">
+          <h2>12. Final Checklist</h2>
+          <p class="lead">You cannot guarantee a score, but if you can do every item here quickly and explain the intuition, you are studying the right things.</p>
+          <div class="grid">
+            <article class="card wide">
+              <ul class="checklist">
+                <li>Convert binary, hex, octal, and decimal.</li>
+                <li>Compute minimum bits for unique items.</li>
+                <li>Identify valid aligned instruction addresses.</li>
+                <li>Detect two's-complement overflow and interpret wrapped bits.</li>
+                <li>Evaluate the custom 6-bit float format.</li>
+                <li>Compute exponent bias from exponent bit count.</li>
+                <li>Explain endianness and serialization.</li>
+                <li>Compute CPI, cycles, runtime, stall percent, and speedup.</li>
+                <li>Compute two-level and three-level AMAT.</li>
+                <li>Compute simple pipeline timing and branch flush penalty.</li>
+                <li>Explain temporal and spatial locality.</li>
+                <li>Predict row-major vs column-wise cache behavior.</li>
+                <li>Explain why NumPy can beat Python loops.</li>
+                <li>Define process, thread, system call, context switch, and OS policy.</li>
+                <li>Reason about fork, wait, and possible output orderings.</li>
+                <li>Simulate FCFS, SJF, SRTF, and Round Robin.</li>
+                <li>Compute turnaround, waiting, and response time.</li>
+                <li>Translate virtual addresses using VPN, offset, and PFN.</li>
+                <li>Compute page table entries and memory size.</li>
+                <li>Simulate FIFO and LRU page replacement.</li>
+                <li>Explain why LRU faults every time on ABCD repeated with 3 frames.</li>
+                <li>Explain thrashing and page-size fragmentation tradeoffs.</li>
+                <li>Distinguish files, directories, databases, and data models.</li>
+                <li>Compute dataset size and I/O over epochs/trials.</li>
+                <li>Compare row store, column store, and Parquet.</li>
+                <li>Compute seek, rotation, transfer, and fragmentation cost.</li>
+                <li>Compute task graph lower bounds, speedup, efficiency, and idle time.</li>
+                <li>Apply Amdahl's law and explain fixed problem size.</li>
+                <li>Explain SIMD, GPU bottlenecks, NUMA, and false sharing.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

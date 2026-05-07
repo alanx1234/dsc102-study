@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DSC 102 Cheat Sheet</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; font-size: 6.8pt; line-height: 1.25; color: #000; }
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 5mm 5mm;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 4mm;
+  page-break-after: always;
+}
+
+.col { }
+
+.sec {
+  border-top: 1.2px solid #000;
+  padding-top: 1mm;
+  margin-bottom: 2.5mm;
+  break-inside: avoid;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  margin-bottom: 1mm;
+  display: block;
+}
+
+.f {
+  font-family: 'Courier New', monospace;
+  font-size: 6.2pt;
+  margin: 0.5mm 0 0.5mm 2mm;
+  white-space: pre-wrap;
+}
+
+p { margin: 0.3mm 0; }
+ul { padding-left: 3.5mm; margin: 0.3mm 0; }
+li { margin: 0.2mm 0; }
+b { font-weight: bold; }
+
+.eg {
+  font-size: 6.2pt;
+  margin: 0.5mm 0 0.3mm 2mm;
+  color: #222;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { page-break-after: always; break-after: page; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: FAST REFERENCE (topics you know) -->
+<div class="page">
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Bits / Hex</span>
+<ul>
+  <li>k bits → 2^k values; N items → ceil(log₂N) bits</li>
+  <li>1 hex digit = 4 bits; n hex digits = 4n bits = n/2 bytes</li>
+  <li>A=1010 B=1011 C=1100 D=1101 E=1110 F=1111</li>
+  <li>hex addr n digits → 2^(4n) bytes addressable</li>
+</ul>
+<p class="eg">0x3ACF → 16 bits, 2 bytes, 64KB addressable<br>
+0x7F3A = 0111 1111 0011 1010</p>
+<p><b>Dec→hex:</b> divide by 16, read remainders bottom-up</p>
+<p class="eg">185÷16=11(B) r9 → <b>0xB9</b> | 255÷16=15(F) r15(F) → <b>0xFF</b><br>
+To verify: 0xB9 = 11×16+9 = 176+9 = 185 ✓</p>
+</div>
+
+<div class="sec">
+<span class="title">Two's Complement</span>
+<ul>
+  <li>k-bit signed: −2^(k−1) to 2^(k−1)−1 | 8-bit: −128 to 127</li>
+  <li>MSB=1: signed = unsigned_val − 2^k</li>
+  <li>Negate: flip all bits, add 1</li>
+  <li><b>Overflow:</b> two positives → negative result (or vice versa)</li>
+</ul>
+<p class="eg">95+60=155 &gt; 127 → overflow. 10011011₂ → 155−256 = <b>−101</b><br>
+120+15=135 → 10000111₂ → 135−256 = <b>−121</b><br>
+11111110₂ unsigned=254 → signed=254−256=<b>−2</b></p>
+</div>
+
+<div class="sec">
+<span class="title">Custom 6-bit Float</span>
+<p>Layout: [s | e₁e₀ | f₂f₁f₀] (sign | 2-bit exp | 3-bit frac)</p>
+<div class="f">value = (−1)^s × 2^(exp−1) × (1 + f₂×0.5 + f₁×0.25 + f₀×0.125)</div>
+<p class="eg">010110: s=0, exp=10₂=2, scale=2^1=2, frac=1+0.5+0.25=1.75 → <b>3.5</b></p>
+<p><b>FP bias (general):</b> bias = 2^(e−1)−1 where e = # exp bits</p>
+<p class="eg">FP32: bias=127 | FP16 (5 exp): bias=15 | 4-bit exp: bias=7<br>
+BF16: 8 exp bits → bias=127, wider range than FP16</p>
+</div>
+
+<div class="sec">
+<span class="title">IEEE 754 FP32: Decimal → 32-bit</span>
+<p>Layout: [s (1b) | exp (8b, bias=127) | mantissa (23b)]</p>
+<div class="f">1. Sign: s=0 (+), s=1 (−)
+2. Convert |x| to binary (int part + fraction part)
+3. Normalize: shift binary point → 1.xxx × 2^n
+4. Stored exp = n + 127  (write as 8-bit unsigned)
+5. Mantissa = first 23 bits of xxx (zero-pad right)</div>
+<p class="eg">12.375: s=0 | 12=1100₂, 0.375=0.011₂ → 1100.011₂<br>
+→ 1.100011 × 2³ | exp=3+127=130=10000010₂<br>
+→ 0 10000010 10001100000000000000000</p>
+<p class="eg">Decode: 0 10000010 10001100... → exp=130−127=3<br>
+→ 1.100011 × 2³ = 1100.011₂ = <b>12.375</b></p>
+<p class="eg">Frac→binary: 0.375×2=0.75(0), 0.75×2=1.5(1), 0.5×2=1.0(1) → .011</p>
+</div>
+
+<div class="sec">
+<span class="title">Instruction Alignment</span>
+<ul>
+  <li>b-byte instructions: addresses are multiples of b</li>
+  <li># instructions = mem_size / b</li>
+  <li>fraction valid byte addresses = 1/b</li>
+</ul>
+<p class="eg">8-byte instr, PC=0x4000: next → 0x4008, 0x4010, 0x4018...<br>
+2KB memory: 2048/8 = <b>256 instructions</b> | valid: 1/8<br>
+4-byte ARM, 1KB: 1024/4=<b>256 instr</b> | valid: 1/4</p>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">CPI / CPU Performance</span>
+<div class="f">CPI_base = Σ(frac_i × cycles_i)
+CPI_stall = CPI_base + mem_frac × stall_per_op
+total_cycles = IC × CPI
+time = total_cycles / clock_rate
+speedup = old_time / new_time</div>
+<p class="eg">4GHz, 1.5B instr: 50%ALU(1cy), 20%ctrl(3cy), 30%mem(2cy+40cy stall)<br>
+CPI_base = 0.5+0.6+0.6 = <b>1.7</b><br>
+CPI_stall = 1.7+0.3×40 = <b>13.7</b> → 1.5B×13.7/4B = <b>5.14s</b><br>
+stall→10: new CPI=1.7+3=4.7 → speedup=13.7/4.7=<b>2.91×</b></p>
+<p class="eg">1B instr, 25% mem, 40cy stall: base=1B, stall=0.25B×40=10B, total=11B<br>
+stall%=10/11=<b>90.9%</b> | stall→10: new=3.5B → speedup=11/3.5=<b>3.14×</b></p>
+<p class="eg">3GHz, 2B instr: 40%ALU(1), 30%mem(5), 30%ctrl(2): (no stall)<br>
+CPI=0.4×1+0.3×5+0.3×2=<b>2.5</b> | cycles=5B | time=5B/3GHz=<b>1.67s</b><br>
+new: 20%ALU/50%mem/30%ctrl → CPI=0.2+2.5+0.6=<b>3.3</b> → time=<b>2.2s</b></p>
+</div>
+
+<div class="sec">
+<span class="title">Pipelining</span>
+<ul>
+  <li>k stages, t = stage time. First: k×t. Each after: +t. Total n: (k+n−1)×t</li>
+  <li>Purpose: ↑ throughput — NOT ↓ latency of one instruction</li>
+  <li>Branch misprediction at end of stage j: flush stages 1..j−1 (wasted work)</li>
+</ul>
+<p class="eg">5-stage, 10ms/stage, 10 instr: (5+9)×10 = <b>140ms</b><br>
+Misprediction at end of stage 3 (instr 5): flushes 2 stages → +20ms penalty</p>
+</div>
+
+<div class="sec">
+<span class="title">AMAT — Memory Hierarchy</span>
+<p><b>2-Level (L1 + DRAM):</b></p>
+<div class="f">AMAT = L1_time + (1−L1_hit_rate) × miss_penalty</div>
+<p><b>3-Level (L1 + L2 + DRAM):</b></p>
+<div class="f">AMAT = L1 + L1_miss × (L2 + L2_miss × DRAM)
+P(reach DRAM) = L1_miss × L2_miss
+NOTE: L2 hit rate is CONDITIONAL on L1 miss</div>
+<p class="eg">L1=2ns(0.8hr), L2=12ns(0.75hr|L1miss), DRAM=100ns:<br>
+AMAT = 2 + 0.2×(12 + 0.25×100) = 2+0.2×37 = <b>9.4ns</b><br>
+P(DRAM) = 0.2×0.25 = <b>5%</b></p>
+<p class="eg">L1=4ns(0.8), L2=20ns(0.75), DRAM=200ns:<br>
+AMAT = 4+0.2×(20+0.25×200) = 4+0.2×70 = <b>18ns</b><br>
+L1→0.9: AMAT=4+0.1×70 = <b>11ns</b></p>
+<p><b>As avg cycles:</b></p>
+<div class="f">avg_cycles = hit_time + miss_rate × miss_penalty
+total_time = num_accesses × avg_cycles / clock_rate</div>
+<p class="eg">2B accesses, hit=4cy, miss_pen=80cy, hr=0.85, 2GHz:<br>
+avg=4+0.15×80=<b>16cy</b> → time=2B×16/2B=<b>16s</b> | hr→0.95: <b>8s</b>, speedup=<b>2×</b></p>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Cache Lines & Locality</span>
+<div class="f">elem/line = cache_line_bytes / element_bytes
+miss_rate (sequential) ≈ 1 / elem_per_line</div>
+<p class="eg">64B line, float64(8B): 8 elem/line → miss≈1/8<br>
+64B line, float32(4B): 16 elem/line → miss≈1/16</p>
+<p><b>Row-major (C/NumPy default):</b></p>
+<ul>
+  <li>outer=rows, inner=cols → sequential → <b>fast</b> (spatial locality)</li>
+  <li>outer=cols, inner=rows → stride=row_length → <b>cache thrashing</b></li>
+</ul>
+</div>
+
+<div class="sec">
+<span class="title">Dataset Size & I/O</span>
+<div class="f">row_bytes = Σ col_sizes  [int64=8B, float64=8B, int32=4B]
+file_size = row_count × row_bytes
+passes = epochs × num_learning_rates
+total_IO = file_size × passes</div>
+<p class="eg">500M rows, (UserID int64, Timestamp int64, Value float64):<br>
+row=24B | file=500M×24=<b>12GB</b><br>
+10 epochs × 3 LR = 30 passes → IO = 12×30=<b>360GB</b></p>
+</div>
+
+<div class="sec">
+<span class="title">Feature Expansion (pairwise interactions)</span>
+<div class="f">new_cols = C(d,2) = d×(d−1)/2     [d = num features, no squared terms]
+expanded_cols = d + 1_label + C(d,2)
+
+Step A: train on orig   → read orig × epochs × LR
+Step B: expand features → read orig + write expanded
+Step C: train on expanded → read expanded × epochs × LR
+Total IO = A + B + C</div>
+<p class="eg">200M rows, d=4 features + 1 label, float64, 3LR × 4epochs:<br>
+C(4,2)=6 | orig: 5×8×200M=<b>8GB</b> | expanded: 11×8×200M=<b>17.6GB</b><br>
+A=8×4×3=96GB | B=8+17.6=25.6GB | C=17.6×4×3=211.2GB<br>
+Total = <b>332.8 GB</b></p>
+</div>
+
+<div class="sec">
+<span class="title">Row-Store Useful Throughput</span>
+<div class="f">useful_data = file_size × (needed_cols / total_cols)
+useful_throughput = useful_data / runtime
+bandwidth_util = useful_throughput / device_bandwidth</div>
+<p class="eg">12GB, 120 equal cols, 1 col needed, 30s, SSD=600MB/s:<br>
+useful=12GB/120=100MB | throughput=100/30=<b>3.33MB/s</b> | util=3.33/600=<b>0.56%</b></p>
+</div>
+
+
+</div>
+</div><!-- end page 1 -->
+
+
+<!-- PAGE 2: SCHEDULING + DISK I/O -->
+<div class="page">
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Scheduling Metrics</span>
+<div class="f">Turnaround = completion − arrival
+Response  = first_cpu_time − arrival   ← NOT completion
+Waiting   = turnaround − burst_time</div>
+<p><b>Response ≠ turnaround.</b> Response = when job FIRST gets CPU.</p>
+</div>
+
+<div class="sec">
+<span class="title">Scheduling Algorithms</span>
+<p><b>FCFS:</b> treat the ready queue as a literal FIFO — process at the front runs until done, then dequeue next. Convoy effect: one long job stalls all shorter ones behind it.</p>
+<p><b>SJF (non-preemptive):</b> when CPU becomes free, scan all READY jobs and pick the one with the shortest burst. Does NOT interrupt a currently running job even if something shorter arrives.</p>
+<p><b>SRTF (preemptive SJF):</b> on every new arrival (and on each completion), compare the newcomer's burst to the running job's REMAINING time. If newcomer is shorter → preempt immediately. Think: always running the minimum remaining time in the ready set.</p>
+<p><b>Round Robin:</b> cycle through jobs giving each a fixed quantum q. Unfinished job goes to back of queue. Good response time. If q too small → context-switch overhead dominates; if q too large → degenerates to FCFS.</p>
+</div>
+
+<div class="sec">
+<span class="title">Context Switch Overhead</span>
+<p>Each switch adds switch_cost before the next job starts. First job has no overhead.</p>
+<p class="eg">FCFS P1(20),P2(5),P3(15),P4(10), all t=0, 1ms switch:<br>
+P1:0 | P2:21 | P3:27 | P4:43 → wait avg=91/4=<b>22.75ms</b><br>
+SJF order P2,P4,P3,P1 → starts 0,6,17,33 → avg=<b>14ms</b></p>
+</div>
+
+<div class="sec">
+<span class="title">fork() Output</span>
+<p>Child is a copy of parent at the fork point. Both continue from after fork().</p>
+<p class="eg">W(A); fork(); W(B); if(child) wait(); W(C);<br>
+A: once (before fork) | B: twice (both parent+child)<br>
+C: twice (child first if parent waits, then parent)<br>
+→ A B B C C</p>
+</div>
+
+<div class="sec">
+<span class="title">SRTF Simulation — Review</span>
+<div class="f">P1(burst=7,arr=0) P2(burst=4,arr=2) P3(burst=1,arr=4)
+
+FCFS:  [P1:0-7][P2:7-11][P3:11-12]
+       TAT: 7,9,8  avg=8
+
+SJF:   [P1:0-7][P3:7-8][P2:8-12]  (P3 shorter at t=7)
+       TAT: 7,4,10  avg=7
+
+SRTF:  [P1:0-2][P2:2-4][P3:4-5][P2:5-7][P1:7-12]
+  t=2: P2.burst(4) &lt; P1.rem(5) → preempt
+  t=4: P3.burst(1) &lt; P2.rem(2) → preempt
+  t=5: P2.rem(2) &lt; P1.rem(5)  → P2 first
+       TAT: P1=12,P2=5,P3=1  avg=6</div>
+</div>
+
+<div class="sec">
+<span class="title">Round Robin Trace — Review</span>
+<div class="f">P1=9, P2=5, P3=3, P4=7  all arr=0, quantum=3
+[P1:0-3][P2:3-6][P3:6-9][P4:9-12]
+[P1:12-15][P2:15-17][P4:17-20]
+[P1:20-23][P4:23-24]
+Done: P3=9, P2=17, P1=23, P4=24
+Avg TAT = (9+17+23+24)/4 = 18.25
+Avg response = (0+3+6+9)/4 = 4.5
+  ← response = time of FIRST cpu slice, not completion</div>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Disk I/O — HDD Mechanics</span>
+<p>Three components of every I/O:</p>
+<ul>
+  <li><b>Seek:</b> arm moves to correct track (1–20ms, avg ~4–8ms)</li>
+  <li><b>Rotational latency:</b> wait for sector to spin under head (avg = half rotation)</li>
+  <li><b>Transfer:</b> data moves off platter (~100s MB/s, small per-op)</li>
+</ul>
+<div class="f">rot_period  = 60,000ms / RPM
+avg_rot     = rot_period / 2
+T_IO        = seek + avg_rot + transfer
+transfer    = data_size / bandwidth
+bandwidth   = IOPS × IO_size</div>
+<p><b>Sequential vs random:</b> sequential can be 100–300× faster than random because contiguous blocks skip seeks and rotational waits.</p>
+</div>
+
+<div class="sec">
+<span class="title">Disk I/O — Contiguous vs Chunked</span>
+<div class="f">Contiguous file:
+  T = 1×seek + 1×avg_rot + file_size/BW
+
+Chunked access (n chunks of size s):
+  chunk_transfer = s / BW
+  T_per_chunk    = seek + avg_rot + chunk_transfer
+  T_total        = n × T_per_chunk</div>
+<p class="eg"><b>Slide example</b> — 10GB, 7200RPM, seek=8ms, BW=150MB/s, 512KB chunks:<br>
+rot=60000/7200=8.33ms → avg_rot=<b>4.17ms</b><br>
+chunk_transfer=0.5/150=0.00333s=<b>3.33ms</b><br>
+T_per_chunk=8+4.17+3.33=<b>15.5ms</b><br>
+n_chunks=10240MB/0.5MB=<b>20,480</b><br>
+Total=20480×15.5ms=317s≈<b>5.3min</b><br>
+Sequential only: 10240/150=<b>68s</b> → chunked is <b>4.7× slower</b></p>
+<p class="eg"><b>Contiguous vs fragmented</b> — 2GB, 7200RPM, seek=8ms, BW=150MB/s, 512 frags:<br>
+avg_rot=4.17ms | transfer=2048/150=13.65s<br>
+Contiguous: 12.17ms+13.65s≈<b>13.66s</b><br>
+Fragmented: 512×12.17ms+13.65s≈<b>19.88s</b> (<b>1.46× slower</b>)</p>
+</div>
+
+<div class="sec">
+<span class="title">Storage Performance Terms</span>
+<ul>
+  <li><b>IOPS:</b> I/O operations per second the device can sustain</li>
+  <li><b>Bandwidth:</b> bytes/sec = IOPS × IO_size</li>
+  <li><b>Latency:</b> total time to deliver data (seek+rot+transfer+OS delays)</li>
+</ul>
+<p class="eg">40GB file, disk BW=800MB/s: 40×10⁹/8×10⁸=<b>50s</b><br>
+Same over 1.6Gbps network (=200MB/s): 40×10⁹/2×10⁸=<b>200s</b></p>
+<p><b>SSD vs HDD:</b> SSD has no seek/rotation → 100× faster random I/O, 10–100× higher BW. Still block-addressable.</p>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Disk Scheduling</span>
+<p><b>SSTF</b> (Shortest Seek Time First): pick pending request closest to current head position. Fast but can starve far-away tracks.</p>
+<p><b>SCAN/C-SCAN</b> (elevator): sweep arm in one direction serving requests, then reverse (or jump back). Prevents starvation; ignores rotational latency.</p>
+<p><b>SPTF</b> (Shortest Positioning Time First): account for BOTH seek AND rotation — pick the request with least total positioning time. Best in practice; done inside drive firmware today.</p>
+</div>
+
+<div class="sec">
+<span class="title">Multi-core Scheduling</span>
+<p><b>SQMS:</b> one shared queue, any core picks next. Simple; lock contention at scale.</p>
+<p><b>MQMS:</b> one queue per core. Less contention; risk of load imbalance.</p>
+<div class="f">Makespan = time until last job finishes = max(sum of jobs per core)</div>
+</div>
+
+<div class="sec">
+<span class="title">Row-Store vs Column-Store</span>
+<p><b>Row-store:</b> all columns of a row stored together. Good for full-row reads (OLTP). Bad for column-only queries — must scan all columns.</p>
+<p><b>Column-store (Parquet, ORC):</b> each column stored together. Great for column-subset queries — only read needed columns. Better compression (same-type data together).</p>
+<p><b>Parquet vs CSV:</b> compressed (up to 10× smaller), column pruning, schema+metadata embedded, immutable. Cannot edit in-place.</p>
+<p class="eg">1TB CSV → 130GB Parquet; query 236s→6.78s (34×); scans 99% less data.</p>
+</div>
+
+<div class="sec">
+<span class="title">Process States (quick ref)</span>
+<p>NEW → READY → RUNNING → BLOCKED → READY</p>
+<ul>
+  <li>RUNNING→BLOCKED: process issues I/O syscall</li>
+  <li><b>BLOCKED→READY: I/O completes</b></li>
+  <li>RUNNING→READY: timer interrupt (preemption)</li>
+  <li>Threads share address space; processes don't</li>
+  <li>GIL: CPython = 1 thread at a time (CPU-bound bottleneck)</li>
+</ul>
+</div>
+
+</div>
+</div><!-- end page 2 -->
+
+
+<!-- PAGE 3: VIRTUAL MEMORY + PAGING -->
+<div class="page">
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Virtual Memory Basics</span>
+<div class="f">offset_bits = log₂(page_size)
+VPN_bits   = address_bits − offset_bits
+# pages    = 2^(VPN_bits)  =  VA_space / page_size
+
+VPN    = virtual_addr ÷ page_size  (upper bits)
+offset = virtual_addr mod page_size (lower bits)
+
+physical_addr = PFN × page_size + offset</div>
+<p class="eg">8-bit VA, page_size=16B (2^4):<br>
+offset_bits=4, VPN_bits=4, pages=2^4=16<br>
+VA=35: VPN=35÷16=<b>2</b>, offset=35 mod 16=<b>3</b><br>
+  If PFN for VPN 2 = 7 → PA = 7×16+3 = <b>115</b><br>
+VA=50: VPN=3, offset=2, PFN=1 → PA=1×16+2 = <b>18</b></p>
+<p class="eg">32-bit VA, 4KB page: offset=12 bits, VPN=20 bits<br>
+entries per process = 2^20 = <b>1,048,576</b></p>
+</div>
+
+<div class="sec">
+<span class="title">Page Table Size</span>
+<div class="f">Step 1: offset_bits = log₂(page_size)
+Step 2: VPN_bits = address_bits − offset_bits
+Step 3: entries per process = 2^(VPN_bits)
+Step 4: one_PT_bytes = entries × PTE_size
+Step 5: all_PT_bytes = one_PT_bytes × num_processes
+Step 6: frames_needed = ceil(all_PT_bytes / page_size)</div>
+
+<p><b>Why frames?</b> Page tables themselves live in physical memory. Each frame holds page_size bytes of page table data.</p>
+
+<p class="eg"><b>Worked (the "4 frames" example):</b><br>
+20-bit VA, page=4KB, PTE=4B, 16 processes<br>
+Step 1: offset = log₂(4096) = <b>12 bits</b><br>
+Step 2: VPN = 20 − 12 = <b>8 bits</b><br>
+Step 3: entries/process = 2^8 = <b>256</b><br>
+Step 4: 1 PT = 256 × 4B = <b>1024 bytes</b><br>
+Step 5: all PTs = 1024 × 16 = <b>16,384 bytes</b><br>
+Step 6: frames = 16384 / 4096 = <b>4 frames</b></p>
+
+<p class="eg">24-bit VA, 4KB page, PTE=4B, 8 processes:<br>
+VPN=12 bits, entries=4096, 1PT=16KB, all=128KB → frames=128KB/4KB=<b>32</b></p>
+
+<p class="eg">VA_space=2^16B, page=2^8B:<br>
+offset=8, VPN=8, entries=256/process</p>
+</div>
+
+<div class="sec">
+<span class="title">Page Replacement Policies</span>
+<p><b>FIFO:</b> evict page loaded EARLIEST (track load order)</p>
+<p><b>LRU:</b> evict LEAST RECENTLY USED — update on every HIT too, not just faults</p>
+<p><b>OPT:</b> evict page whose NEXT USE is farthest away (theoretical best)</p>
+
+<p><b>Simulation steps:</b></p>
+<ol style="padding-left:4mm">
+  <li>Go through reference string left→right</li>
+  <li>HIT: page in frame → no fault; update LRU order</li>
+  <li>FAULT: page not in frame → if empty slot, fill it; else evict per policy</li>
+  <li>Count total faults and hits</li>
+</ol>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Page Replacement Example</span>
+<p>Reference string: 1 2 3 4 1 2 5 1 2 3 4 5 — 3 frames</p>
+
+<p><b>FIFO</b> (evict oldest loaded):</p>
+<div class="f">Ref: 1  2  3  4  1  2  5  1  2  3  4  5
+     F  F  F  F  F  F  F  -  -  F  F  -
+Frames after each (queue order):
+1→[1]  2→[1,2]  3→[1,2,3]  4→evict1[2,3,4]
+1→evict2[3,4,1]  2→evict3[4,1,2]  5→evict4[1,2,5]
+1=hit  2=hit  3→evict1[2,5,3]  4→evict2[5,3,4]  5=hit
+Faults = 9</div>
+
+<p><b>LRU</b> (evict least recently used):</p>
+<div class="f">Ref: 1  2  3  4  1  2  5  1  2  3  4  5
+     F  F  F  F  F  F  F  H  H  F  F  F
+After 4: evict LRU=1 → [2,3,4]
+After 1: 1∉{2,3,4} → evict LRU=2 → [3,4,1]
+After 2: 2∉{3,4,1} → evict LRU=3 → [4,1,2]
+After 5: evict LRU=4 → [1,2,5]
+1,2: hits | 3: evict LRU=5 → [1,2,3] | 4: evict LRU=1 → [2,3,4] | 5: F
+Faults = 10</div>
+
+<p><b>OPT</b> (evict page used farthest in future):</p>
+<div class="f">Ref: 1  2  3  4  1  2  5  1  2  3  4  5
+     F  F  F  F  H  H  F  H  H  F  F  H
+At 4: [1,2,3]. Next: 1@+1, 2@+2, 3@+6 → evict 3 → [1,2,4]
+At 5,6: HIT (1,2 in frames)
+At 7: [1,2,4]. Next: 1@+1, 2@+2, 4@+4 → evict 4 → [1,2,5]
+At 8,9: HIT (1,2)
+At 10: [1,2,5]. 1,2→never again, 5@+2 → evict 1 → [2,5,3]
+At 11: [2,5,3]. 2,3→never, 5@+1 → evict 2 → [5,3,4]
+At 12: ref=5 → HIT
+Faults = 7</div>
+
+<p><b>Key:</b> Thrashing = more page faults than useful work → CPU util drops. Fix: reduce multiprogramming, add RAM.</p>
+<p><b>Larger pages:</b> ↑ internal fragmentation (waste within page). Paging = no external fragmentation.</p>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">ABCADBEABC Example (3 frames)</span>
+<p>Reference string: A B C A D B E A B C</p>
+<p><b>FIFO:</b></p>
+<div class="f">A→[A]F  B→[A,B]F  C→[A,B,C]F  A=hit
+D→evict A[B,C,D]F  B=hit  E→evict B[C,D,E]F
+A→evict C[D,E,A]F  B→evict D[E,A,B]F  C→evict E[A,B,C]F
+Faults = 8</div>
+<p><b>LRU:</b></p>
+<div class="f">A→[A]F  B→[A,B]F  C→[A,B,C]F  A=hit→order:[B,C,A]
+D→evict B(LRU)[C,A,D]F  B→evict C[A,D,B]F  E→evict A[D,B,E]F
+A→evict D[B,E,A]F  B=hit  C→evict E[A,B,C]F
+Faults = 8  (tie with FIFO here)</div>
+<p><b>OPT:</b></p>
+<div class="f">A→[A]F  B→[A,B]F  C→[A,B,C]F  A=hit
+D: next use: B@+1,A@+3,C→never → evict C → [A,B,D]F
+B=hit  E: D→never → evict D → [A,B,E]F
+A=hit  B=hit  C: all→never → evict any → [A,B,C]F
+Faults = 6  (OPT beats FIFO=LRU=8 on this string)</div>
+</div>
+
+<div class="sec">
+<span class="title">VPN/PFN Translation (more examples)</span>
+<p class="eg">16-bit VA, page=256B (2^8): offset=8 bits, VPN=8 bits<br>
+VA=0x12AB: VPN=0x12=18, offset=0xAB=171<br>
+If page table[18]=PFN 5: PA=5×256+171=<b>1451</b></p>
+<p class="eg">Page size = 4KB = 2^12: offset = 12 bits always for 4KB<br>
+VA_bits=32: VPN=20 bits, entries=2^20 per process</p>
+<p><b>PTE size:</b> must hold PFN + control bits (valid, dirty, read/write)<br>
+If PA space = 2^20 bytes, 4KB pages → 2^8 physical frames → need 8 bits for PFN + overhead → round up to 4B per PTE</p>
+</div>
+
+<div class="sec">
+<span class="title">Page Offset / VPN Bits Practice</span>
+<div class="f">Given: VA_space size S, page size P
+  → offset = log₂(P)
+  → VPN = log₂(S/P) = log₂(S) − log₂(P)
+
+Given: 32KB VA, 512B pages:
+  → offset = log₂(512) = 9 bits
+  → VPN = log₂(32768/512) = log₂(64) = 6 bits
+  → 64 virtual pages</div>
+</div>
+
+</div>
+</div><!-- end page 3 -->
+
+
+<!-- PAGE 4: PARALLELISM + AMDAHL -->
+<div class="page">
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Amdahl's Law</span>
+<div class="f">speedup(n) = 1 / ((1−p) + p/n)
+  p = parallelizable fraction
+  n = number of workers/cores
+
+max_speedup (n→∞) = 1 / (1−p)
+
+speedup = T_serial / T_parallel
+efficiency = speedup / n_workers</div>
+<p class="eg">p=0.75 (75% parallel), n=8 cores:<br>
+max = 1/(1−0.75) = 1/0.25 = <b>4×</b><br>
+8-core = 1/(0.25 + 0.75/8) = 1/0.34375 = <b>2.91×</b><br>
+5-core = 1/(0.25 + 0.75/5) = 1/0.4 = <b>2.5×</b> | single-core 80min → <b>32min</b></p>
+<p class="eg">p=0.9, n=10: speedup=1/(0.1+0.09)=1/0.19=<b>5.26×</b><br>
+max=1/0.1=<b>10×</b> | efficiency=5.26/10=<b>52.6%</b></p>
+<p class="eg">T_serial=24min, T_parallel(6 workers)=5min:<br>
+speedup=24/5=<b>4.8×</b> | efficiency=4.8/6=<b>80%</b></p>
+<p class="eg">Serial part=10s, parallel=90s, n=9: new_parallel=10s<br>
+T_new=10+10=20s | speedup=100/20=<b>5×</b></p>
+</div>
+
+<div class="sec">
+<span class="title">Task Graph Lower Bounds</span>
+<div class="f">work       = sum of all task durations
+crit_path  = longest path from start to end (serial deps)
+lower_bound = max(work / n_workers, crit_path)
+max_speedup = work / lower_bound
+idle_time   = n_workers × actual_makespan − work</div>
+<p class="eg">work=100, crit_path=40, 4 workers:<br>
+LB = max(100/4, 40) = max(25, 40) = <b>40</b><br>
+max_speedup = 100/40 = <b>2.5×</b><br>
+actual makespan=50: idle=4×50−100=<b>100 worker-units</b></p>
+<p class="eg">work=60, crit=15, 3 workers:<br>
+LB=max(60/3,15)=max(20,15)=<b>20</b><br>
+max_speedup=60/20=<b>3×</b> (linear! possible here)</p>
+<p class="eg">Spring 26-2: work=70, crit=35 (T1→T4→T6), T3=10 alone<br>
+3W: LB=max(70/3,35)=35 → speedup=<b>2×</b>, idle=3×35-70=<b>35</b><br>
+2W: LB=max(70/2,35)=35 but actual makespan=<b>40</b><br>
+  (T6 blocked until BOTH T4 and T5 finish → forces extra 5 units)</p>
+<p><b>Critical path</b> = serial bottleneck. Speedup ≤ work/crit even with ∞ workers.</p>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">CPU Utilization / Efficiency</span>
+<div class="f">CPU_util = compute_time / (compute + wait_time)
+efficiency = useful_work / total_work_done</div>
+<p class="eg">18s compute, 27s communication overhead:<br>
+util = 18/(18+27) = 18/45 = <b>40%</b></p>
+<p class="eg">Job: 5s useful, 15s total (incl. sync + idle):<br>
+efficiency = 5/15 = <b>33%</b></p>
+</div>
+
+<div class="sec">
+<span class="title">NUMA & False Sharing</span>
+<p><b>NUMA (Non-Uniform Memory Access):</b></p>
+<ul>
+  <li>Multi-socket machines: each socket has "local" RAM</li>
+  <li>Accessing remote socket's RAM = k× slower than local</li>
+</ul>
+<p class="eg">Local=100ns, remote=3× slower:<br>
+Thread on Socket 0 reading Socket 1's memory → <b>300ns</b></p>
+
+<p><b>False Sharing:</b></p>
+<ul>
+  <li>Two threads write <b>different variables</b> on the <b>same cache line</b></li>
+  <li>Every write forces other core to invalidate its copy → constant line bouncing</li>
+  <li>Fix: pad struct so each thread's variable is on its own cache line</li>
+</ul>
+<p class="eg">Thread A writes x, Thread B writes y. x and y are adjacent ints (4B each) on same 64B cache line → false sharing → repeated cache invalidations even though they write to different variables.</p>
+<p><b>True sharing:</b> threads actually share the same variable (needed for coordination).</p>
+</div>
+
+<div class="sec">
+<span class="title">Parallelism Concepts</span>
+<p><b>SIMD:</b> single instruction, multiple data — one instruction on a vector of values (e.g., add 8 floats at once). Used in NumPy, GPU.</p>
+<p><b>GPU vs CPU:</b> GPU = thousands of simple cores for data-parallel work; CPU = few powerful cores for complex branchy code.</p>
+<p><b>Why NumPy beats Python loops:</b> contiguous typed memory, compiled C kernels, SIMD vectorization, no per-element Python overhead.</p>
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="sec">
+<span class="title">Task Graph Example</span>
+<p>Tasks with dependencies — draw the DAG:</p>
+<div class="f">A=3, B=2, C=4, D=1, E=5
+Deps: B after A, C after A, D after B+C, E after D
+
+Paths:
+A→B→D→E = 3+2+1+5 = 11
+A→C→D→E = 3+4+1+5 = 13  ← critical path
+
+work = 3+2+4+1+5 = 15
+crit_path = 13
+2 workers: LB = max(15/2, 13) = max(7.5, 13) = 13
+max_speedup = 15/13 ≈ 1.15×
+
+Schedule on 2 workers:
+W1: A(0-3) → C(3-7) → D(7-8) → E(8-13)
+W2: idle(0-3) → B(3-5) → idle(5-8)
+Makespan = 13, idle = 2×13−15 = 11 worker-units</div>
+</div>
+
+<div class="sec">
+<span class="title">Amdahl: Solving for p or n</span>
+<div class="f">Given speedup S and n workers: solve for p
+  S = 1/((1−p) + p/n)
+  1/S = (1−p) + p/n = 1 − p + p/n = 1 − p(1 − 1/n)
+  p = (1 − 1/S) / (1 − 1/n)
+
+Given speedup S and p: solve for n
+  1/S = 1 − p + p/n
+  p/n = 1/S − 1 + p
+  n = p / (1/S − 1 + p)</div>
+<p class="eg">Observed speedup=3× with 6 cores: p=(1−1/3)/(1−1/6)=(2/3)/(5/6)=<b>0.8</b> (80% parallel)</p>
+</div>
+
+<div class="sec">
+<span class="title">Storage / Throughput Summary</span>
+<div class="f">Disk: random I/O = seek + rot + transfer  (very slow)
+SSD:  no seek/rot — ~10-100× faster random I/O than disk
+DRAM: ~10-100× faster than SSD
+Cache: ~10× faster than DRAM
+
+Useful BW = data_needed / time_to_read_everything
+  (row-store reading 1 of N cols → useful BW = device_BW / N)</div>
+</div>
+
+<div class="sec">
+<span class="title">MCQ Concept Keys</span>
+<ul>
+  <li><b>Scheduling goal:</b> maximize CPU util / multiprogramming — NOT speed up one process</li>
+  <li><b>Response time low =</b> important for <b>interactive</b> jobs. Batch jobs → minimize turnaround</li>
+  <li><b>Processes don't share</b> virtual addr space. DO share: physical RAM, CPU, disk</li>
+  <li><b>Cache hit rate</b> primarily set by cache <b>SIZE</b> (larger → fewer misses). Not DRAM speed</li>
+  <li><b>Timer interrupt</b> = how OS reclaims CPU from running process without its cooperation</li>
+  <li><b>"2's complement of 12"</b> = representation of −12: flip(00001100)+1 = <b>11110100</b></li>
+  <li><b>ABCD∞ LRU 3 frames:</b> 100% fault rate — 4 unique pages &gt; 3 frames, always evicts</li>
+  <li><b>ABCD∞ OPT 3 frames:</b> ≈33% fault rate — OPT can load ABC, strategically defer D</li>
+  <li><b>fork() child:</b> child=0 in child process, child=PID in parent. Both resume after fork()</li>
+  <li><b>Larger pages:</b> ↑ internal frag, ZERO external frag (paging always uses fixed-size frames)</li>
+  <li><b>Thrashing →</b> ↓ CPU utilization (CPU spending all time on page faults, not useful work)</li>
+  <li><b>SJF:</b> selects shortest at time CPU is free. Does NOT preempt running job even if shorter arrives</li>
+  <li><b>SRTF preempts</b> when new arrival's burst &lt; current job's REMAINING time (not original burst)</li>
+</ul>
+</div>
+
+</div>
+</div><!-- end page 4 -->
+
+</body>
+</html>
