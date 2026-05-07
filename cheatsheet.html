@@ -136,6 +136,21 @@ BF16: 8 exp bits → bias=127, wider range than FP16</p>
 4-byte ARM, 1KB: 1024/4=<b>256 instr</b> | valid: 1/4</p>
 </div>
 
+<div class="sec">
+<span class="title">Powers of 2 — Quick Lookup</span>
+<div class="f">2^0=1       2^1=2       2^2=4       2^3=8
+2^4=16      2^5=32      2^6=64      2^7=128
+2^8=256     2^9=512     2^10=1,024  2^11=2,048
+2^12=4,096  2^13=8,192  2^14=16,384 2^15=32,768
+2^16=65,536 2^17=131,072 2^18=262,144 2^19=524,288
+2^20=1,048,576 (≈1M)   2^24≈16M    2^30≈1B (1GB)
+
+Key: N bits → 2^N values → need ceil(log₂(N_items)) bits
+  70,000 items: 2^16=65536&lt;70000&lt;2^17=131072 → 17 bits
+  4KB page = 2^12 → offset=12 bits
+  1MB = 2^20 | 1GB = 2^30 | 4GB = 2^32</div>
+</div>
+
 </div>
 
 <div class="col">
@@ -193,6 +208,25 @@ avg=4+0.15×80=<b>16cy</b> → time=2B×16/2B=<b>16s</b> | hr→0.95: <b>8s</b>,
 </div>
 
 <div class="col">
+
+<div class="sec">
+<span class="title">Unit Conversions — Quick Ref</span>
+<div class="f">Bandwidth:  1 Gbps  = 125 MB/s  (÷8 bits/byte)
+            1.6 Gbps = 200 MB/s
+            800 Mbps = 100 MB/s
+
+Storage:    1 KB = 1,024 B    1 MB = 1,048,576 B
+            1 GB = 10^9 B (problems use this)  OR  2^30 B
+            → use 10^9 unless problem says 2^30
+
+Time:       1 ms = 10^-3 s    1 μs = 10^-6 s    1 ns = 10^-9 s
+            1 GHz clock = 1 cycle per ns
+
+RPM→speed:  7200 RPM → period=60000/7200=8.33ms → avg_rot=4.17ms
+            5400 RPM → period=11.11ms → avg_rot=5.56ms
+
+Bits:       1 byte=8 bits | addr space: n-bit addr → 2^n bytes</div>
+</div>
 
 <div class="sec">
 <span class="title">Cache Lines & Locality</span>
@@ -258,6 +292,23 @@ useful=12GB/120=100MB | throughput=100/30=<b>3.33MB/s</b> | util=3.33/600=<b>0.5
 Response  = first_cpu_time − arrival   ← NOT completion
 Waiting   = turnaround − burst_time</div>
 <p><b>Response ≠ turnaround.</b> Response = when job FIRST gets CPU.</p>
+<p class="eg"><b>All 3 metrics worked:</b> P1(burst=5,arr=0), P2(burst=3,arr=1), FCFS order<br>
+P1: 0→5. P2: 5→8.<br>
+P1: TAT=5-0=<b>5</b> | response=0-0=<b>0</b> | wait=5-5=<b>0</b><br>
+P2: TAT=8-1=<b>7</b> | response=5-1=<b>4</b> | wait=7-3=<b>4</b><br>
+Avg TAT=6 | Avg response=2 | Avg wait=2</p>
+</div>
+
+<div class="sec">
+<span class="title">Algorithm Comparison</span>
+<ul>
+  <li><b>FCFS:</b> simple, no starvation; worst avg TAT if long job first (convoy)</li>
+  <li><b>SJF:</b> optimal avg TAT (non-preemptive); starvation risk for long jobs</li>
+  <li><b>SRTF:</b> optimal avg TAT (preemptive); best for TAT, high overhead</li>
+  <li><b>RR:</b> best avg response time; fair; bad TAT if q too large or small</li>
+</ul>
+<p>Response time ranking (best→worst): RR ≥ SRTF &gt; SJF &gt; FCFS<br>
+Turnaround ranking (best→worst): SRTF = SJF &gt; RR &gt; FCFS</p>
 </div>
 
 <div class="sec">
@@ -404,6 +455,22 @@ Same over 1.6Gbps network (=200MB/s): 40×10⁹/2×10⁸=<b>200s</b></p>
   <li>Threads share address space; processes don't</li>
   <li>GIL: CPython = 1 thread at a time (CPU-bound bottleneck)</li>
 </ul>
+</div>
+
+<div class="sec">
+<span class="title">OS Mechanics — How It Actually Works</span>
+<p><b>User mode vs Kernel mode:</b> Hardware enforces two privilege levels. Normal programs run in user mode (can't touch hardware directly). OS runs in kernel mode (full access).</p>
+<p><b>Syscall (system call):</b> only way for user program to request OS services. Program executes a <b>trap</b> instruction → CPU switches to kernel mode → OS handles the request → returns to user mode. Examples: read(), write(), fork(), malloc() (which calls brk/mmap).</p>
+<p><b>Timer interrupt:</b> hardware timer fires ~every 10ms. CPU automatically jumps to OS interrupt handler (in kernel mode). OS can then: (1) preempt current process (RUNNING→READY), (2) pick another process, (3) return. This is how the OS regains control without process cooperation.</p>
+<p><b>Context switch — step by step:</b></p>
+<ol style="padding-left:4mm">
+  <li>Timer fires → CPU saves PC + registers onto kernel stack</li>
+  <li>OS saves them into the outgoing process's <b>PCB</b></li>
+  <li>Scheduler picks next process from ready queue</li>
+  <li>OS loads new process's PCB (registers, PC) → switch page table (new VA space)</li>
+  <li>Return from interrupt → new process resumes in user mode</li>
+</ol>
+<p><b>PCB</b> (Process Control Block): per-process OS struct storing registers, PC, state, open files, memory map, PID. Lives in kernel memory.</p>
 </div>
 
 </div>
@@ -567,6 +634,22 @@ Given: 32KB VA, 512B pages:
   → 64 virtual pages</div>
 </div>
 
+<div class="sec">
+<span class="title">VM Translation Flow (Conceptual)</span>
+<p><b>Why VM exists:</b> Each process gets illusion of its own private address space (isolation). OS+hardware prevent one process from touching another's memory. Allows using disk as overflow when RAM is full.</p>
+<p><b>Every memory access — what happens:</b></p>
+<ol style="padding-left:4mm">
+  <li>CPU generates virtual address (VA = VPN + offset)</li>
+  <li>MMU checks <b>TLB</b> (hardware cache of recent VPN→PFN translations, ~1 cycle)</li>
+  <li><b>TLB HIT:</b> get PFN → PA = PFN × page_size + offset. Done.</li>
+  <li><b>TLB MISS:</b> MMU walks page table in memory → load PFN into TLB → retry</li>
+  <li><b>Page FAULT:</b> PTE says "not in RAM" → trap to OS → OS finds page on disk → loads into free frame → updates PTE → TLB loaded → resume</li>
+</ol>
+<p><b>TLB:</b> tiny fast associative cache on the CPU die (~32–1024 entries). Stores recently used VPN→PFN pairs. Flushed on context switch (different process = different VA space).</p>
+<p><b>Page fault cost:</b> disk access = millions of cycles. So thrashing (constant faults) kills performance.</p>
+<p><b>Valid bit in PTE:</b> 0 = page not in RAM (trigger fault). 1 = page present, PFN valid. <b>Dirty bit:</b> 1 = page was written → must write back to disk before evicting.</p>
+</div>
+
 </div>
 </div><!-- end page 3 -->
 
@@ -658,6 +741,19 @@ Thread on Socket 0 reading Socket 1's memory → <b>300ns</b></p>
 <p><b>SIMD:</b> single instruction, multiple data — one instruction on a vector of values (e.g., add 8 floats at once). Used in NumPy, GPU.</p>
 <p><b>GPU vs CPU:</b> GPU = thousands of simple cores for data-parallel work; CPU = few powerful cores for complex branchy code.</p>
 <p><b>Why NumPy beats Python loops:</b> contiguous typed memory, compiled C kernels, SIMD vectorization, no per-element Python overhead.</p>
+<p><b>Parallel overhead types:</b> (1) <b>Communication:</b> cores share results (network/memory bus). (2) <b>Synchronization:</b> waiting at barriers/locks. (3) <b>Load imbalance:</b> fast workers idle waiting for slow ones. All reduce efficiency below 1.0.</p>
+</div>
+
+<div class="sec">
+<span class="title">Locks &amp; Synchronization</span>
+<p><b>Race condition:</b> two threads read/modify same shared data concurrently. Outcome depends on timing. Classic: both read x=0, both do x++, both write x=1 → lost update (should be 2).</p>
+<p><b>Critical section:</b> code region that must run atomically — only one thread at a time. Solution: protect with a lock.</p>
+<p><b>Mutex (lock):</b> binary flag. thread calls <b>lock()</b> to enter — if already held, the caller <b>sleeps</b> (blocks). Holder calls <b>unlock()</b> when done → one waiter wakes up.</p>
+<p><b>Spinlock:</b> thread busy-loops checking the lock (burns CPU). Use when wait is very short (saves context-switch overhead). Bad if wait is long.</p>
+<p><b>Deadlock:</b> Thread A holds Lock 1, needs Lock 2. Thread B holds Lock 2, needs Lock 1. Both block forever.</p>
+<p class="eg">Fix deadlock: always acquire locks in the <b>same global order</b> (e.g., always lock 1 before lock 2).</p>
+<p><b>Atomic operations:</b> hardware guarantee — read-modify-write completes without interruption (compare-and-swap, fetch-and-add). No lock needed for simple counters.</p>
+<p><b>Condition variable:</b> lets a thread sleep until a condition is true (e.g., buffer non-empty). Used with a mutex: unlock mutex → sleep → re-lock on wakeup.</p>
 </div>
 
 </div>
